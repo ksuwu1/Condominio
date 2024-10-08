@@ -6,5 +6,5 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun VisitorsScreen(navController: NavHostController) {
-    Text("Pantalla de Detalles de Cuenta")
+    Text("Pantalla de Detalles de Visitantes")
 }
