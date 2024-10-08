@@ -7,10 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,7 +17,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ita.condominio.ui.theme.CondominioTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -30,13 +26,13 @@ import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.ReservationScreen
 import com.ita.condominio.screens.VisitorsScreen
+import com.ita.condominio.ui.theme.CondominioTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CondominioTheme {
-                // Llamamos a la función de navegación
                 AppNavigation()
             }
         }
@@ -49,50 +45,53 @@ fun AccountScreen(navController: NavHostController) {
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
-            .background(Color(0xFFDDEEEA)),
+            .background(Color(0xFFF0F4F8)),  // Color más claro y moderno de fondo
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Título principal
         Text(
             text = "Mi cuenta",
-            fontSize = 24.sp,
+            fontSize = 26.sp,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
+            modifier = Modifier.padding(vertical = 16.dp),
+            color = Color(0xFF1A1A1A)
         )
 
-        // Botón Cuenta
+        // Botones con íconos
         AccountOptionButton(
             text = "Cuenta",
-            iconRes = R.drawable.user, // Reemplaza con tu ícono de cuenta
-            onClick = { navController.navigate("accountDetails") }  // Navega a la pantalla de cuenta
+            iconRes = R.drawable.user,
+            onClick = { navController.navigate("accountDetails") }
         )
 
-        // Botón Visitantes
         AccountOptionButton(
             text = "Visitantes",
-            iconRes = R.drawable.visitors, // Reemplaza con tu ícono de visitantes
-            onClick = { navController.navigate("visitors") }  // Navega a la pantalla de visitantes
+            iconRes = R.drawable.visitors,
+            onClick = { navController.navigate("visitors") }
         )
 
-        // Botón Reservación
         AccountOptionButton(
             text = "Reservación",
-            iconRes = R.drawable.reserv, // Reemplaza con tu ícono de reservación
-            onClick = { navController.navigate("reservation") }  // Navega a la pantalla de reservación
+            iconRes = R.drawable.reserv,
+            onClick = { navController.navigate("reservation") }
         )
 
-        // Botón Pagos
         AccountOptionButton(
             text = "Pagos",
-            iconRes = R.drawable.pay, // Reemplaza con tu ícono de pagos
-            onClick = { navController.navigate("payments") }  // Navega a la pantalla de pagos
+            iconRes = R.drawable.pay,
+            onClick = { navController.navigate("payments") }
         )
 
-        // Botón Cerrar Sesión
-        Spacer(modifier = Modifier.height(16.dp))
+        // Botón de cerrar sesión al final
+        Spacer(modifier = Modifier.height(32.dp))
         Text(
             text = "Cerrar sesión",
-            color = Color.Black,
-            modifier = Modifier.clickable { navController.navigate("logout") }  // Navega a la pantalla de logout
+            fontWeight = FontWeight.Medium,
+            fontSize = 18.sp,
+            color = Color(0xFFDA1E28),
+            modifier = Modifier
+                .clickable { navController.navigate("logout") }
+                .padding(vertical = 8.dp)
         )
     }
 }
@@ -103,21 +102,26 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9AB4A3))
+            .padding(vertical = 8.dp)
+            .height(56.dp),  // Altura más alta para los botones
+        shape = RoundedCornerShape(12.dp),  // Bordes redondeados
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF00796B))  // Color más fuerte para el fondo
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
-            tint = Color.Black
+            modifier = Modifier.size(28.dp),  // Íconos un poco más grandes
+            tint = Color.White
         )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, color = Color.Black)
+        Spacer(modifier = Modifier.width(16.dp))  // Espacio entre ícono y texto
+        Text(
+            text = text,
+            color = Color.White,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 18.sp  // Texto más grande
+        )
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable
@@ -125,10 +129,10 @@ fun AccountScreenPreview() {
     val navController = rememberNavController()
     AccountScreen(navController = navController)
 }
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "account") {
         composable("account") { AccountScreen(navController) }
         composable("accountDetails") { AccountDetailsScreen(navController) }
