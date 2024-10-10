@@ -1,5 +1,6 @@
 package com.ita.condominio
 
+import AccountDetailsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -22,7 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.ita.condominio.screens.AccountDetailsScreen
+
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.ReservationScreen
