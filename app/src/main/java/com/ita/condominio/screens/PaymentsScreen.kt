@@ -6,5 +6,5 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
-    Text("Pantalla de Detalles de Cuenta")
+    Text("Agregar detalles")
 }
