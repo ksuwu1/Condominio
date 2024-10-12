@@ -76,7 +76,7 @@ dependencies {
     implementation ("androidx.navigation:navigation-compose:2.6.0")
     implementation ("com.google.zxing:core:3.4.1") // Para la funcionalidad básica de QR
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
-
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
 
     implementation ("androidx.compose.material:material-icons-extended:1.4.0")
 

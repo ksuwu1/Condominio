@@ -3,6 +3,7 @@ package com.ita.condominio.screens
 import com.ita.condominio.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -75,17 +76,14 @@ fun ReservationScreen(navController: NavHostController) {
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        // Título
-        Text(
-            text = "RESERVA",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+
 
         // Datos generales
         Text(text = "Datos generales", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Text(text = "Folio: 494993", fontSize = 16.sp)
+
+        // Espacio entre datos generales y espacios a reservar
+        Spacer(modifier = Modifier.height(5.dp))
 
         // Campo para seleccionar fecha
         OutlinedTextField(
@@ -129,6 +127,9 @@ fun ReservationScreen(navController: NavHostController) {
             }
         )
 
+        // Espacio entre datos generales y espacios a reservar
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Espacios a reservar
         Text(text = "Espacio a reservar", fontSize = 20.sp, fontWeight = FontWeight.Bold)
 
@@ -150,6 +151,9 @@ fun ReservationScreen(navController: NavHostController) {
             Text(text = "Alberca (\$$precioAlberca)")
         }
 
+        // Espacio entre espacios a reservar y cantidad de visitantes
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Cantidad de visitantes
         OutlinedTextField(
             value = visitantes,
@@ -162,54 +166,42 @@ fun ReservationScreen(navController: NavHostController) {
         // Total a pagar
         Text(text = "Total a pagar: \$$total", fontSize = 16.sp, fontWeight = FontWeight.Bold)
 
-        // Método de pago
+        // Espacio entre total a pagar y método de pago
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Método de pago
         Text(text = "Método de pago", fontSize = 20.sp, fontWeight = FontWeight.Bold)
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
-            Button(
-                onClick = { /* Navegar a PayPal */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent // Elimina el color de fondo
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.paypal),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp) // Ajusta el tamaño del icono aquí
-                )
-                Text(text = "PayPal")
-            }
-            Button(
-                onClick = { /* Navegar a pago con tarjeta */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent // Elimina el color de fondo
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.tarjeta),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp) // Ajusta el tamaño del icono aquí
-                )
-                Text(text = "Tarjeta")
-            }
-            Button(
-                onClick = { /* Navegar a pago en banco */ },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Transparent // Elimina el color de fondo
-                )
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.bank),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp) // Ajusta el tamaño del icono aquí
-                )
-                Text(text = "Banco")
-            }
+            PaymentMethodButton(
+                iconRes = R.drawable.paypal,
+                text = "Pago en línea",
+                onClick = { navController.navigate("paypal/${total}") }
+            )
+
+            PaymentMethodButton(
+                iconRes = R.drawable.bank,
+                text = "Referencia bancaria",
+                onClick = { navController.navigate("banco") }
+            )
         }
+    }
+}
 
 
+@Composable
+fun PaymentMethodButton(iconRes: Int, text: String, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.clickable(onClick = onClick).padding(8.dp)
+    ) {
+        Icon(
+            painter = painterResource(id = iconRes),
+            contentDescription = text,
+            modifier = Modifier.size(48.dp) // Ajusta el tamaño del icono aquí
+        )
+        Text(text = text, fontSize = 14.sp)
     }
 }
