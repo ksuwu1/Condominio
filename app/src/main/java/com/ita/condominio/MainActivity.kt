@@ -1,16 +1,15 @@
 package com.ita.condominio
 
+import AccountDetailsScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
+import androidx.compose.material.BottomNavigation
+import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,23 +19,22 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ita.condominio.ui.theme.CondominioTheme
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.NavHostController
-import com.ita.condominio.screens.AccountDetailsScreen
+
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.ReservationScreen
 import com.ita.condominio.screens.VisitorsScreen
+import com.ita.condominio.ui.theme.CondominioTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             CondominioTheme {
-                // Llamamos a la función de navegación
                 AppNavigation()
             }
         }
@@ -48,52 +46,88 @@ fun AccountScreen(navController: NavHostController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
             .background(Color(0xFFDDEEEA)),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
-            text = "Mi cuenta",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
+        // Primera barra divisora con texto "Condominio"
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(Color(0xFF699C89)),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = "Condominio",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp),
+                color = Color.White
+            )
+        }
 
-        // Botón Cuenta
+        // Segunda barra divisora con texto "Mi cuenta"
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .background(Color(0xFFC4D9D2)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Mi cuenta",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Botones de opciones con tamaño ajustable
         AccountOptionButton(
             text = "Cuenta",
-            iconRes = R.drawable.user, // Reemplaza con tu ícono de cuenta
-            onClick = { navController.navigate("accountDetails") }  // Navega a la pantalla de cuenta
+            iconRes = R.drawable.user,
+            onClick = { navController.navigate("accountDetails") }
         )
-
-        // Botón Visitantes
         AccountOptionButton(
             text = "Visitantes",
-            iconRes = R.drawable.visitors, // Reemplaza con tu ícono de visitantes
-            onClick = { navController.navigate("visitors") }  // Navega a la pantalla de visitantes
+            iconRes = R.drawable.visitors,
+            onClick = { navController.navigate("visitors") }
         )
-
-        // Botón Reservación
         AccountOptionButton(
             text = "Reservación",
-            iconRes = R.drawable.reserv, // Reemplaza con tu ícono de reservación
-            onClick = { navController.navigate("reservation") }  // Navega a la pantalla de reservación
+            iconRes = R.drawable.reserv,
+            onClick = { navController.navigate("reservation") }
         )
-
-        // Botón Pagos
         AccountOptionButton(
             text = "Pagos",
-            iconRes = R.drawable.pay, // Reemplaza con tu ícono de pagos
-            onClick = { navController.navigate("payments") }  // Navega a la pantalla de pagos
+            iconRes = R.drawable.pay,
+            onClick = { navController.navigate("payments") }
         )
 
-        // Botón Cerrar Sesión
+        // Botón Cerrar Sesión con ícono
         Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Cerrar sesión",
-            color = Color.Black,
-            modifier = Modifier.clickable { navController.navigate("logout") }  // Navega a la pantalla de logout
-        )
+        Button(
+            onClick = { navController.navigate("logout") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent) // Cambiado a Color.Transparent
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.logout),
+                contentDescription = "Cerrar sesión",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Cerrar sesión", color = Color.Black)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Bottom Navigation
+        BottomNavigationBar(navController)
     }
 }
 
@@ -103,14 +137,15 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
         onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .height(60.dp) // Ajusta la altura del botón aquí
+            .padding(horizontal = 20.dp, vertical = 8.dp), // Agrega margen a los lados
         shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF9AB4A3))
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFa9dfbf))
     ) {
         Icon(
             painter = painterResource(id = iconRes),
             contentDescription = null,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(25.dp), // Cambia el tamaño del ícono si es necesario
             tint = Color.Black
         )
         Spacer(modifier = Modifier.width(8.dp))
@@ -118,6 +153,58 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
     }
 }
 
+@Composable
+fun BottomNavigationBar(navController: NavHostController) {
+    BottomNavigation(
+        backgroundColor = Color(0xFFa9dfbf),
+        contentColor = Color.Black
+    ) {
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.reporte),
+                    contentDescription = "Informes",
+                    modifier = Modifier.size(30.dp)
+                )
+            },
+            selected = false,
+            onClick = { /* Navegar a informes */ }
+        )
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.home),
+                    contentDescription = "Home",
+                    modifier = Modifier.size(30.dp)
+                )
+            },
+            selected = false,
+            onClick = { /* Navegar a Home */ }
+        )
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.chat),
+                    contentDescription = "Chat",
+                    modifier = Modifier.size(30.dp)
+                )
+            },
+            selected = false,
+            onClick = { /* Navegar a Chat */ }
+        )
+        BottomNavigationItem(
+            icon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.user),
+                    contentDescription = "Usuario",
+                    modifier = Modifier.size(30.dp)
+                )
+            },
+            selected = false,
+            onClick = { /* Navegar a Usuario */ }
+        )
+    }
+}
 
 @Preview(showBackground = true)
 @Composable
@@ -125,6 +212,7 @@ fun AccountScreenPreview() {
     val navController = rememberNavController()
     AccountScreen(navController = navController)
 }
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
