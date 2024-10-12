@@ -75,7 +75,6 @@ dependencies {
     implementation("androidx.compose.material:material-icons-core:1.4.0") // Reemplaza con la versión correspondiente
     implementation ("androidx.navigation:navigation-compose:2.6.0")
 
-
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
 

@@ -26,7 +26,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavHostController
 import com.ita.condominio.screens.AccountDetailsScreen
-import com.ita.condominio.screens.LoginScreen
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.ReservationScreen
@@ -95,12 +94,6 @@ fun AccountScreen(navController: NavHostController) {
             color = Color.Black,
             modifier = Modifier.clickable { navController.navigate("logout") }  // Navega a la pantalla de logout
         )
-        // Botón Iniciar Sesión
-        Text(
-            text = "Iniciar sesión",
-            color = Color.Black,
-            modifier = Modifier.clickable { navController.navigate("login") }  // Navega a la pantalla de login
-        )
     }
 }
 
@@ -143,6 +136,5 @@ fun AppNavigation() {
         composable("reservation") { ReservationScreen(navController) }
         composable("payments") { PaymentsScreen(navController) }
         composable("logout") { LogoutScreen(navController) }
-        composable("login") { LoginScreen(navController) }
     }
 }
