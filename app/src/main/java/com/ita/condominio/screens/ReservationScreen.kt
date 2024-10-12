@@ -184,7 +184,7 @@ fun ReservationScreen(navController: NavHostController) {
             PaymentMethodButton(
                 iconRes = R.drawable.bank,
                 text = "Referencia bancaria",
-                onClick = { navController.navigate("banco") }
+                onClick = { navController.navigate("banco/${total}") }
             )
         }
     }

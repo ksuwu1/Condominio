@@ -28,11 +28,13 @@ class MainActivity : ComponentActivity() {
         val intent = Intent(this, PayPalService::class.java)
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, Config.PAYPAL_CONFIG)
         startService(intent)
+
         setContent {
             CondominioTheme {
                 AppNavigation()
             }
         }
+
     }
     override fun onDestroy() {
         super.onDestroy()
@@ -57,7 +59,10 @@ fun AppNavigation() {
             PaypalScreen(total)
         }
         composable("tarjeta") { CardPaymentScreen() } // Pantalla de pago con tarjeta
-        composable("banco") { BankPaymentScreen() } // Pantalla de pago en banco
+        composable("banco/{total}") { backStackEntry ->
+            val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
+            BankPaymentScreen(navController,total) // Pasamos el total
+        }
     }
 }
 
