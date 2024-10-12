@@ -12,12 +12,14 @@ import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.screens.AccountScreen
 import com.ita.condominio.screens.BankPaymentScreen
 import com.ita.condominio.screens.CardPaymentScreen
+import com.ita.condominio.screens.ChangePasswordScreen
 import com.ita.condominio.screens.Config
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
 import com.ita.condominio.screens.ReservationScreen
 import com.ita.condominio.screens.VisitorsScreen
+
 import com.ita.condominio.ui.theme.CondominioTheme
 import com.paypal.android.sdk.payments.PayPalService
 
@@ -63,6 +65,7 @@ fun AppNavigation() {
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
             BankPaymentScreen(navController,total) // Pasamos el total
         }
+        composable("changePassword") { ChangePasswordScreen(navController) }
     }
 }
 

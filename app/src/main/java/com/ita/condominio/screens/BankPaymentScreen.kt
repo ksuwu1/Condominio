@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -22,6 +23,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
+import com.ita.condominio.BottomNavigationBar
+import com.ita.condominio.CustomHeader
 import java.io.OutputStream
 
 @Composable
@@ -29,77 +32,97 @@ fun BankPaymentScreen(navController: NavHostController, totalAmount: Double) {
     val bankName = "HSBC"
     val accountNumber = "8765-4321-1098-7654"
     val referenceNumber = "REF-002-2024"
-    val instructions =
-        "Por favor, realice el pago en Cajero o Ventanilla HSBC utilizando el número de referencia y envíe el comprobante al siguiente número de WhatsApp: 2226061577."
+    val instructions = "Por favor, realice el pago en Cajero o Ventanilla HSBC utilizando el número de referencia y envíe el comprobante al siguiente número de WhatsApp: 2226061577."
 
     var nombreCompleto by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize()
     ) {
-        Text(
-            text = "Pago Referencia Bancaria",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black
-        )
+        // Header con el título dinámico
+        CustomHeader(title = "Pago Bancario")
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Banco: $bankName", fontSize = 18.sp)
-        Text(text = "Número de cuenta: $accountNumber", fontSize = 18.sp)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = referenceNumber,
-            onValueChange = {},
-            label = { Text("Referencia bancaria") },
+        // Contenido desplazable con LazyColumn
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-            readOnly = true
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        OutlinedTextField(
-            value = nombreCompleto,
-            onValueChange = { nombreCompleto = it },
-            label = { Text("Nombre completo del pagador") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(text = "Cantidad a pagar: \$${"%.2f".format(totalAmount)}", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = instructions,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Button(
-            onClick = {
-                generarFichaPDF(navController.context, bankName, accountNumber, referenceNumber, nombreCompleto, totalAmount)
-            }
+                .weight(1f)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = "Generar ficha de pago")
+            item {
+                Text(
+                    text = "Pago con Referencia Bancaria",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
+
+            item {
+                Text(text = "Banco: $bankName", fontSize = 18.sp)
+                Text(text = "Número de cuenta: $accountNumber", fontSize = 18.sp)
+            }
+
+            item {
+                OutlinedTextField(
+                    value = referenceNumber,
+                    onValueChange = {},
+                    label = { Text("Referencia bancaria") },
+                    modifier = Modifier.fillMaxWidth(),
+                    readOnly = true
+                )
+            }
+
+            item {
+                OutlinedTextField(
+                    value = nombreCompleto,
+                    onValueChange = { nombreCompleto = it },
+                    label = { Text("Ingrese su nombre completo") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            item {
+                Text(
+                    text = "Cantidad a pagar: \$${"%.2f".format(totalAmount)}",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            item {
+                Text(
+                    text = instructions,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(horizontal = 16.dp)
+                )
+            }
+
+            item {
+                Button(
+                    onClick = {
+                        generarFichaPDF(
+                            navController.context,
+                            bankName,
+                            accountNumber,
+                            referenceNumber,
+                            nombreCompleto,
+                            totalAmount
+                        )
+                    }
+                ) {
+                    Text(text = "Generar ficha de pago")
+                }
+            }
         }
+
+        // BottomNavigationBar fijo en la parte inferior
+        BottomNavigationBar(navController)
     }
 }
+
 
 fun generarFichaPDF(
     context: Context,
@@ -163,4 +186,5 @@ fun generarFichaPDF(
     } ?: run {
         Toast.makeText(context, "Error al acceder a MediaStore", Toast.LENGTH_LONG).show()
     }
+
 }
