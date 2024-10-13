@@ -30,7 +30,7 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
             .height(60.dp)
             .padding(horizontal = 20.dp, vertical = 8.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.verde_claro))
+        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFa9dfbf))
     ) {
         Icon(
             painter = painterResource(id = iconRes),

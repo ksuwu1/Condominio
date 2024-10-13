@@ -58,14 +58,14 @@ fun AppNavigation() {
         composable("logout") { LogoutScreen(navController) }
         composable("paypal/{total}") { backStackEntry ->
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
-            PaypalScreen(total)
+            PaypalScreen(total = total, navController = navController) // Pasamos el navController
         }
         composable("tarjeta") { CardPaymentScreen() } // Pantalla de pago con tarjeta
         composable("banco/{total}") { backStackEntry ->
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
             BankPaymentScreen(navController,total) // Pasamos el total
         }
-        composable("changePassword") { ChangePasswordScreen(navController) }
+        composable("ChangePassword") { ChangePasswordScreen(navController) }
     }
 }
 
