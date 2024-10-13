@@ -11,7 +11,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color // Importar Color para usar colores hexadecimales
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -23,6 +22,7 @@ import com.ita.condominio.CustomHeader
 fun ReportsScreen(navController: NavHostController) {
     var message by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
+    var successMessage by remember { mutableStateOf("") } // Estado para el mensaje de éxito
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Encabezado personalizado
@@ -35,6 +35,15 @@ fun ReportsScreen(navController: NavHostController) {
             items(messages) { msg ->
                 Text(text = msg, modifier = Modifier.padding(4.dp))
             }
+        }
+
+        // Mensaje de éxito
+        if (successMessage.isNotEmpty()) {
+            Text(
+                text = successMessage,
+                modifier = Modifier.padding(8.dp),
+                color = Color.Green // Cambia el color del texto a verde
+            )
         }
 
         Row(modifier = Modifier.padding(8.dp)) {
@@ -51,6 +60,7 @@ fun ReportsScreen(navController: NavHostController) {
                 onClick = {
                     if (message.isNotEmpty()) {
                         messages.add(message)
+                        successMessage = "Mensaje enviado con éxito" // Actualiza el mensaje de éxito
                         message = ""
                         // Aquí puedes agregar código para enviar el mensaje a la base de datos
                     }
@@ -63,19 +73,4 @@ fun ReportsScreen(navController: NavHostController) {
 
         BottomNavigationBar(navController = navController)
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewChatScreen() {
-    // Necesitas un NavHostController simulado para la previsualización.
-    // Puedes crear un MockNavController si es necesario.
-    ReportsScreen(navController = mockNavController()) // Utiliza un controlador de navegación simulado.
-}
-
-// Mock para el controlador de navegación (si es necesario)
-@Composable
-fun mockNavController(): NavHostController {
-    // Implementa un controlador de navegación simulado según sea necesario para la previsualización.
-    return rememberNavController()
 }
