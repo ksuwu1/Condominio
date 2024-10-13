@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -29,7 +30,7 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
             .height(60.dp)
             .padding(horizontal = 20.dp, vertical = 8.dp),
         shape = RoundedCornerShape(10.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFa9dfbf))
+        colors = ButtonDefaults.buttonColors(containerColor = colorResource(id = R.color.verde_claro))
     ) {
         Icon(
             painter = painterResource(id = iconRes),
@@ -45,7 +46,7 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     BottomNavigation(
-        backgroundColor = Color(0xFFC4D9D2),
+        backgroundColor = colorResource(id = R.color.verde_claro),
         contentColor = Color.Black
     ) {
         BottomNavigationItem(

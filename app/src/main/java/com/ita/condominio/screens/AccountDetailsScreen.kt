@@ -49,7 +49,7 @@ fun AccountDetailsScreen(navController: NavHostController) {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.Center, // Cambiado a Center
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
@@ -57,6 +57,7 @@ fun AccountDetailsScreen(navController: NavHostController) {
                         contentDescription = "Casa",
                         modifier = Modifier.size(24.dp)
                     )
+                    Spacer(modifier = Modifier.width(8.dp)) // Espacio entre icono y texto
                     Text(text = "Número de casa: 10", fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
@@ -128,6 +129,7 @@ fun AccountDetailsScreen(navController: NavHostController) {
         BottomNavigationBar(navController)
     }
 }
+
 
 
 @Composable
