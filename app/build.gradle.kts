@@ -59,7 +59,6 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -68,14 +67,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     implementation("androidx.compose.ui:ui:1.5.3")
     //implementation("androidx.navigation:navigation-compose:2.6.0")
-    implementation("androidx.compose.material3:material3:1.1.1")
+    implementation ("androidx.compose.material3:material3:1.3.0")
+    implementation ("androidx.compose.material3:material3-window-size-class:1.3.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.3")
-
     implementation("androidx.compose.material:material:1.4.0") // Reemplaza con la versión correspondiente
     implementation("androidx.compose.material:material-icons-core:1.4.0") // Reemplaza con la versión correspondiente
     implementation ("androidx.navigation:navigation-compose:2.6.0")
     implementation ("com.google.zxing:core:3.4.1") // Para la funcionalidad básica de QR
     implementation ("com.journeyapps:zxing-android-embedded:4.3.0")
+    implementation ("com.paypal.sdk:paypal-android-sdk:2.16.0")
+    implementation ("androidx.compose.material:material-icons-extended:1.4.0")
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
 

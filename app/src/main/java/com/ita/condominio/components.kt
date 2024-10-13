@@ -10,9 +10,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+//import com.ita.condominio.screens.MainMenuScreen
 
 @Composable
 fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
@@ -39,7 +42,7 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     BottomNavigation(
-        backgroundColor = Color(0xFFC4D9D2),
+        backgroundColor = colorResource(R.color.verde_claro),
         contentColor = Color.Black
     ) {
         BottomNavigationItem(
@@ -62,7 +65,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a Home */ }
+            onClick = { navController.navigate("MainMenu") }
         )
         BottomNavigationItem(
             icon = {
@@ -88,3 +91,4 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
     }
 }
+

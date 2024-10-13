@@ -26,7 +26,7 @@ import com.ita.condominio.R
 
 
 @Composable
-fun LoginScreen(navController: NavHostController) {
+fun LogInScreen(navController: NavHostController) {
     // Estado para almacenar los valores de los campos de texto
     var houseNumber by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }

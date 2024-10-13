@@ -91,6 +91,23 @@ fun AccountScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Botón Iniciar Sesión
+        Button(
+            onClick = { navController.navigate("login") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.login),
+                contentDescription = "Iniciar sesión",
+                modifier = Modifier.size(24.dp),
+                tint = Color.Black
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text = "Iniciar sesión", color = Color.Black)
+        }
+
         // Botón Cerrar Sesión
         Button(
             onClick = { navController.navigate("logout") },
