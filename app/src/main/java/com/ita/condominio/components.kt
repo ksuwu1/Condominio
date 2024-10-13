@@ -1,5 +1,6 @@
 package com.ita.condominio
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
@@ -8,14 +9,24 @@ import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.font.FontWeight
+
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+
 //import com.ita.condominio.screens.MainMenuScreen
+
+import com.ita.condominio.screens.AccountScreen
+
 
 @Composable
 fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
@@ -42,7 +53,7 @@ fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
 @Composable
 fun BottomNavigationBar(navController: NavHostController) {
     BottomNavigation(
-        backgroundColor = colorResource(R.color.verde_claro),
+        backgroundColor = colorResource(id = R.color.verde_claro),
         contentColor = Color.Black
     ) {
         BottomNavigationItem(
@@ -82,13 +93,58 @@ fun BottomNavigationBar(navController: NavHostController) {
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.user),
-                    contentDescription = "Usuario",
+                    contentDescription = "User",
                     modifier = Modifier.size(30.dp)
                 )
             },
             selected = false,
-            onClick = { /* Navegar a Usuario */ }
+            onClick = { navController.navigate("account") }
         )
     }
 }
+
+
+@Composable
+fun CustomHeader(title: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(), // Cambié fillMaxSize por fillMaxWidth
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Primera barra divisora con texto "Condominio"
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(Color(0xFF699C89)),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = "Condominio",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(start = 16.dp),
+                color = Color.White
+            )
+        }
+
+        // Segunda barra divisora con texto dinámico
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .background(Color(0xFFC4D9D2)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = title,  // Texto dinámico
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
+
 

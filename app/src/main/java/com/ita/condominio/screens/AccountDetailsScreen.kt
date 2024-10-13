@@ -1,5 +1,6 @@
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -14,83 +15,121 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ita.condominio.BottomNavigationBar
+import com.ita.condominio.CustomHeader
 import com.ita.condominio.R
+
 
 @Composable
 fun AccountDetailsScreen(navController: NavHostController) {
     var isEditing by remember { mutableStateOf(false) }
 
-    var name by remember { mutableStateOf("Nombre") }
-    var lastNameP by remember { mutableStateOf("Apellido paterno") }
-    var lastNameM by remember { mutableStateOf("Apellido materno") }
-    var phone by remember { mutableStateOf("Teléfono de casa") }
-    var mobile by remember { mutableStateOf("Celular") }
-    var email by remember { mutableStateOf("Correo electrónico") }
+    var name by remember { mutableStateOf("") }
+    var lastNameP by remember { mutableStateOf("") }
+    var lastNameM by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
+    var mobile by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color(0xFFA9DFBF))
-            .padding(16.dp)
-    ) {
-        // Barra superior con icono de casa y número
-        Row(
+    Column(modifier = Modifier.fillMaxSize()) {
+        // CustomHeader fijo en la parte superior
+        CustomHeader(title = "Datos propietario")
+
+        // Contenido desplazable con LazyColumn
+        LazyColumn(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+                .weight(1f)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Ajusta el tamaño del ícono aquí
-            Icon(
-                painter = painterResource(id = R.drawable.home),
-                contentDescription = "Casa",
-                modifier = Modifier.size(24.dp) // Tamaño ajustado
-            )
-            Text(text = "Número de casa: 10", fontSize = 18.sp, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Título "Datos propietario"
-        Text(
-            text = "Datos propietario",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Campos de datos
-        EditableField("Nombre", name, isEditing) { name = it }
-        EditableField("Apellido paterno", lastNameP, isEditing) { lastNameP = it }
-        EditableField("Apellido materno", lastNameM, isEditing) { lastNameM = it }
-        EditableField("Teléfono casa", phone, isEditing) { phone = it }
-        EditableField("Celular", mobile, isEditing) { mobile = it }
-        EditableField("Correo", email, isEditing) { email = it }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Botones de acciones
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            Button(onClick = {
-                isEditing = !isEditing
-            }) {
-                Text(if (isEditing) "Guardar cambios" else "Modificar datos")
+            // Barra superior con icono de casa y número
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    horizontalArrangement = Arrangement.Center, // Cambiado a Center
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.home),
+                        contentDescription = "Casa",
+                        modifier = Modifier.size(24.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp)) // Espacio entre icono y texto
+                    Text(text = "Número de casa: 10", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                }
             }
 
-            Button(onClick = { /* Cambiar contraseña no funcional */ }) {
-                Text("Cambiar contraseña")
+            item {
+                Text(
+                    text = "Datos propietario",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+
+            item { EditableField("Nombre", name, isEditing) { name = it } }
+            item { EditableField("Apellido paterno", lastNameP, isEditing) { lastNameP = it } }
+            item { EditableField("Apellido materno", lastNameM, isEditing) { lastNameM = it } }
+            item { EditableField("Teléfono casa", phone, isEditing) { phone = it } }
+            item { EditableField("Celular", mobile, isEditing) { mobile = it } }
+            item { EditableField("Correo", email, isEditing) { email = it } }
+
+            // Botones de acciones con íconos
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    // Botón Modificar Datos
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.editar),
+                            contentDescription = "Editar",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Button(
+                            onClick = {
+                                isEditing = !isEditing
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))
+                        ) {
+                            Text(if (isEditing) "Guardar cambios" else "Modificar datos")
+                        }
+                    }
+
+                    // Botón Cambiar Contraseña
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.pass),
+                            contentDescription = "Cambiar contraseña",
+                            modifier = Modifier.size(24.dp)
+                        )
+                        Button(
+                            onClick = { navController.navigate("changePassword") },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))
+                        ) {
+                            Text("Cambiar contraseña")
+                        }
+                    }
+                }
             }
         }
+
+        // BottomNavigationBar fijo en la parte inferior
+        BottomNavigationBar(navController)
     }
 }
+
 
 
 @Composable
