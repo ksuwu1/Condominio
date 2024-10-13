@@ -19,6 +19,9 @@ import com.ita.condominio.CustomHeader
 
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
+
+    Text("Pantalla de Detalles de Cuenta")
+}
     Row(
         modifier = Modifier
             .fillMaxSize()
@@ -86,3 +89,4 @@ fun PaymentsScreenPreview() {
     val navController = rememberNavController() // Crea un NavHostController simulado
     PaymentsScreen(navController = navController)
 }
+

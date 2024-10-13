@@ -20,6 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+import androidx.navigation.NavHostController
+
+@Composable
+fun BankPaymentScreen(navController: NavHostController, total: Double) {
+    // Contenido de la pantalla de PayPal
+    Text(text = "Pantalla de BankPayment", fontSize = 24.sp)
+}
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
@@ -188,3 +196,4 @@ fun generarFichaPDF(
     }
 
 }
+

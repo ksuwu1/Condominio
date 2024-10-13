@@ -14,12 +14,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.text.font.FontWeight
+
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+
+//import com.ita.condominio.screens.MainMenuScreen
+
 import com.ita.condominio.screens.AccountScreen
+
 
 @Composable
 fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
@@ -69,7 +76,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a Home */ }
+            onClick = { navController.navigate("MainMenu") }
         )
         BottomNavigationItem(
             icon = {
@@ -95,6 +102,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         )
     }
 }
+
 
 @Composable
 fun CustomHeader(title: String) {
@@ -137,5 +145,6 @@ fun CustomHeader(title: String) {
         }
     }
 }
+
 
 

@@ -14,6 +14,7 @@ import com.ita.condominio.screens.BankPaymentScreen
 import com.ita.condominio.screens.CardPaymentScreen
 import com.ita.condominio.screens.ChangePasswordScreen
 import com.ita.condominio.screens.Config
+import com.ita.condominio.screens.LogInScreen
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
@@ -50,11 +51,13 @@ fun AppNavigation() {
     val navController = rememberNavController()
 
     NavHost(navController = navController, startDestination = "account") {
+        composable("MainMenu") { MainScreen(navController) }
         composable("account") { AccountScreen(navController) }
         composable("accountDetails") { AccountDetailsScreen(navController) }
         composable("visitors") { VisitorsScreen(navController) }
         composable("reservation") { ReservationScreen(navController) }
         composable("payments") { PaymentsScreen(navController) }
+        composable("login") { LogInScreen(navController) }
         composable("logout") { LogoutScreen(navController) }
         composable("paypal/{total}") { backStackEntry ->
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
@@ -66,7 +69,6 @@ fun AppNavigation() {
             BankPaymentScreen(navController,total) // Pasamos el total
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
+
     }
 }
-
-
