@@ -24,11 +24,18 @@ import androidx.navigation.NavHostController
 import com.ita.condominio.R
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.runtime.*
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    val navController = rememberNavController()
+    // Estado para controlar la visibilidad del diálogo
+    var showDialog by remember { mutableStateOf(false) }
+    var editableText by remember { mutableStateOf("Texto de avisos inicial") }
 
     Scaffold(
         topBar = {
@@ -43,6 +50,7 @@ fun MainScreen(navController: NavHostController) {
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.verde_blanco),
                         )
+
                         Text(
                             text = "Circuito \"nombre\"",
                             fontSize = 16.sp,
@@ -57,7 +65,6 @@ fun MainScreen(navController: NavHostController) {
             BottomNavigationBar(navController)
         }
     ) { innerPadding ->
-        // Usar LazyColumn para contenido desplazable
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
@@ -66,10 +73,9 @@ fun MainScreen(navController: NavHostController) {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             item {
-                // Avisos del condominio section
                 Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.Center // Alinea el texto en el centro
+                    contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "Avisos del condominio",
@@ -85,7 +91,7 @@ fun MainScreen(navController: NavHostController) {
                     overlayColor = colorResource(id = R.color.verde_oscuro),
                     text = "Avisos",
                     textColor = colorResource(id = R.color.verde_blanco),
-                    onClick = { /* Acción para Avisos del condominio */ },
+                    onClick = { showDialog = true } // Abre el diálogo al hacer clic
                 )
             }
             item {
@@ -112,7 +118,7 @@ fun MainScreen(navController: NavHostController) {
                         modifier = Modifier
                             .weight(1f)
                             .height(150.dp)
-                            .background(Color(0xFF8bc6b0), shape = RoundedCornerShape(10.dp))
+                            .background(Color(0xFF8bc6b0), shape = RoundedCornerShape(15.dp))
                             .clickable { /* Acción para Finanzas 1 */ }
                     ) {
                         Text(
@@ -127,7 +133,7 @@ fun MainScreen(navController: NavHostController) {
                         modifier = Modifier
                             .weight(1f)
                             .height(150.dp)
-                            .background(Color(0xFF94E1BE), shape = RoundedCornerShape(10.dp))
+                            .background(Color(0xFF94E1BE), shape = RoundedCornerShape(15.dp))
                             .clickable { /* Acción para Finanzas 2 */ }
                     ) {
                         Text(
@@ -159,7 +165,7 @@ fun MainScreen(navController: NavHostController) {
                     overlayColor = colorResource(id = R.color.verde_oscuro),
                     text = "Reservar",
                     textColor = colorResource(id = R.color.verde_blanco),
-                    onClick = { /* Acción para Reservar área */ }
+                    onClick = { navController.navigate("reservation") }
                 )
             }
             item {
@@ -186,6 +192,42 @@ fun MainScreen(navController: NavHostController) {
                 )
             }
         }
+
+        // Diálogo de Avisos
+        if (showDialog) {
+            AlertDialog(
+                onDismissRequest = { showDialog = false },
+                title = {
+                    Text(
+                        text = "Avisos",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                text = {
+                    Column {
+                        // Campo de texto editable
+                        TextField(
+                            value = editableText,
+                            onValueChange = { editableText = it },
+                            label = { Text("Escribe aquí") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                },
+                confirmButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Guardar")
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = { showDialog = false }) {
+                        Text("Cancelar")
+                    }
+                }
+            )
+        }
     }
 }
 
@@ -207,7 +249,7 @@ fun BoxWithImageBackground(
         modifier = Modifier
             .fillMaxWidth()
             .height(130.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(15.dp))
             .clickable { onClick() }
             .padding(8.dp),
         contentAlignment = Alignment.Center // Alinea el contenido en el centro del Box
@@ -219,14 +261,14 @@ fun BoxWithImageBackground(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .matchParentSize()
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(15.dp))
         )
         // Capa de color semitransparente
         Box(
             modifier = Modifier
                 .matchParentSize()
                 .background(overlayColor.copy(alpha = 0.5f))
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(15.dp))
         )
         // Texto centrado
         Text(
