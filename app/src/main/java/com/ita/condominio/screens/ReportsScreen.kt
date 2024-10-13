@@ -20,7 +20,7 @@ import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
 
 @Composable
-fun ChatScreen(navController: NavHostController) {
+fun ReportsScreen(navController: NavHostController) {
     var message by remember { mutableStateOf("") }
     val messages = remember { mutableStateListOf<String>() }
 
@@ -70,7 +70,7 @@ fun ChatScreen(navController: NavHostController) {
 fun PreviewChatScreen() {
     // Necesitas un NavHostController simulado para la previsualización.
     // Puedes crear un MockNavController si es necesario.
-    ChatScreen(navController = mockNavController()) // Utiliza un controlador de navegación simulado.
+    ReportsScreen(navController = mockNavController()) // Utiliza un controlador de navegación simulado.
 }
 
 // Mock para el controlador de navegación (si es necesario)

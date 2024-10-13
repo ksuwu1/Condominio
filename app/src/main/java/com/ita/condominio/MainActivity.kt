@@ -23,6 +23,7 @@ import com.ita.condominio.screens.VisitorsScreen
 
 import com.ita.condominio.ui.theme.CondominioTheme
 import com.paypal.android.sdk.payments.PayPalService
+import com.ita.condominio.screens.ReportsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +70,7 @@ fun AppNavigation() {
             BankPaymentScreen(navController,total) // Pasamos el total
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
+        composable("reports") { ReportsScreen(navController) } // Añadido
 
     }
 }
