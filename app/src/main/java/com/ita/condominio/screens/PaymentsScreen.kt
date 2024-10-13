@@ -15,60 +15,68 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
 
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
+    val pendingAmount = 0.00 // Cambia esto por el monto que necesitas
 
-    Text("Pantalla de Detalles de Cuenta")
-}
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxSize()
     ) {
         // Encabezado de la pantalla
         CustomHeader(title = "Pagos")
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(100.dp) // Opcional: agrega un poco de padding
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(), // Usamos Column para apilar el contenido
-            verticalArrangement = Arrangement.Top, // Coloca el contenido en la parte superior
-            horizontalAlignment = Alignment.CenterHorizontally // Centra el contenido horizontalmente
+
+        // Contenido principal de la pantalla
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp) // Espacio horizontal
+                .weight(1f), // Permite que este Box use el espacio restante
+            contentAlignment = Alignment.TopCenter // Centra el contenido
         ) {
-            // Texto para indicar la cantidad pendiente
-            Text(
-                text = "Pendiente de pagar",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(top = 16.dp) // Espacio entre el encabezado y el texto
-            )
-
-            // Muestra la cantidad pendiente
-            DisplayAmount(pendingAmount = 0.00)
-
-            // Agrega un Column para los botones
             Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp), // Espacio entre la cantidad y los botones
-                horizontalAlignment = Alignment.CenterHorizontally // Centra los botones
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                // Texto para indicar la cantidad pendiente
+                Text(
+                    text = "Pendiente de pagar",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(top = 16.dp)
+                )
 
-                Button(
-                    onClick = { navController.navigate("paypal") }, // Navegar a PayPalScreen
+                // Muestra la cantidad pendiente
+                DisplayAmount(pendingAmount = pendingAmount)
+
+                // Agrega un Column para los botones
+                Column(
                     modifier = Modifier
-                        .padding(vertical = 8.dp) // Espacio vertical entre los botones
-                        .height(48.dp) // Altura del botón
-                        .background(Color(0xFFC4D9D2), shape = RoundedCornerShape(8.dp)), // Color de fondo del botón
-                    shape = RoundedCornerShape(8.dp) // Bordes redondeados
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text(text = "Paga en línea")
+                    Button(
+                        onClick = { navController.navigate("paypal/${pendingAmount}") }, // Navegar a PayPalScreen con el monto pendiente
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .height(48.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFFC4D9D2),
+                            contentColor = Color.Black
+                        )
+                    ) {
+                        Text(text = "Paga en línea")
+                    }
                 }
             }
         }
+
+        // Barra de navegación inferior
+        BottomNavigationBar(navController = navController)
     }
 }
 
@@ -77,7 +85,7 @@ fun PaymentsScreen(navController: NavHostController) {
 fun DisplayAmount(pendingAmount: Double) {
     Text(
         text = "$ $pendingAmount", // Muestra la cantidad
-        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 50.sp), // Cambia el tamaño de la fuente aquí
+        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 50.sp),
         modifier = Modifier.padding(top = 8.dp) // Espacio entre el texto de la cantidad y el contenido superior
     )
 }
@@ -89,4 +97,3 @@ fun PaymentsScreenPreview() {
     val navController = rememberNavController() // Crea un NavHostController simulado
     PaymentsScreen(navController = navController)
 }
-
