@@ -13,7 +13,9 @@ import com.ita.condominio.screens.AccountScreen
 import com.ita.condominio.screens.BankPaymentScreen
 import com.ita.condominio.screens.CardPaymentScreen
 import com.ita.condominio.screens.Config
+import com.ita.condominio.screens.ReportScreen
 import com.ita.condominio.screens.LogoutScreen
+import com.ita.condominio.screens.MorosoScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
 import com.ita.condominio.screens.ReservationScreen
@@ -63,6 +65,8 @@ fun AppNavigation() {
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
             BankPaymentScreen(navController,total) // Pasamos el total
         }
+        composable("reports") { ReportScreen(navController) }
+        composable("morosos") { MorosoScreen(navController) }
     }
 }
 

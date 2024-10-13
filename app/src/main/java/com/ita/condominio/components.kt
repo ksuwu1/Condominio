@@ -51,7 +51,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a informes */ }
+            onClick = { navController.navigate("reports") }
         )
         BottomNavigationItem(
             icon = {
@@ -84,7 +84,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a Usuario */ }
+            onClick = { navController.navigate("account") }
         )
     }
 }
