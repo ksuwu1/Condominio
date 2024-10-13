@@ -86,7 +86,7 @@ fun BottomNavigationBar(navController: NavHostController) {
             icon = {
                 Icon(
                     painter = painterResource(id = R.drawable.user),
-                    contentDescription = "Usuario",
+                    contentDescription = "User",
                     modifier = Modifier.size(30.dp)
                 )
             },
