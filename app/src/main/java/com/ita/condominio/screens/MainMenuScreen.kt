@@ -1,6 +1,7 @@
 package com.ita.condominio
 
 import androidx.compose.foundation.Image
+import androidx. compose. material. ButtonColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -23,7 +24,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.ita.condominio.R
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.style.TextAlign
@@ -35,35 +38,60 @@ import androidx.compose.runtime.SideEffect
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(navController: NavHostController) {
-    // Estado para controlar la visibilidad del diálogo
-    var showDialog by remember { mutableStateOf(false) }
-    var editableText by remember { mutableStateOf("Texto de avisos inicial") }
+    var showAvisoDialog by remember { mutableStateOf(false) }
 
-    //Cambiar colores de la status bar
-    val systemUiController = rememberSystemUiController()
-    val statusBarColor = colorResource(id = R.color.verde_medio) // Elige tu color
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController) },
+        containerColor = Color.White // Color de fondo del Scaffold
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding) // Usa el padding interno del Scaffold
+        ) {
+            // Banner en la parte superior
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Primera barra divisora con texto "Condominio"
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color(0xFF699C89)),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Text(
+                        text = "Condominio",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(start = 16.dp),
+                        color = Color.White
+                    )
+                }
 
-    SideEffect {
-        systemUiController.setStatusBarColor(
-            color = statusBarColor,
-            darkIcons = false // Cambia a true si quieres íconos oscuros con una barra de color claro
-        )
-    }
-
-    //Codigo de la ventana
-
-    Column {
-        TopBar()
-        Scaffold(
-            modifier = Modifier.fillMaxWidth(),
-            bottomBar = {
-                BottomNavigationBar(navController)
+                // Segunda barra divisora con texto dinámico
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(30.dp)
+                        .background(Color(0xFFC4D9D2)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Circuito --- Int ###",  // Texto dinámico
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                }
             }
-        ) { innerPadding ->
+
+            // Contenido de la LazyColumn
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(innerPadding)
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -86,14 +114,14 @@ fun MainScreen(navController: NavHostController) {
                         overlayColor = colorResource(id = R.color.verde_oscuro),
                         text = "Avisos",
                         textColor = colorResource(id = R.color.verde_blanco),
-                        onClick = { showDialog = true } // Abre el diálogo al hacer clic
+                        onClick = { showAvisoDialog = true } // Abre el diálogo al hacer clic
                     )
                 }
                 item {
                     // Finanzas section
                     Box(
                         modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center // Alinea el texto en el centro
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Finanzas",
@@ -108,47 +136,20 @@ fun MainScreen(navController: NavHostController) {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(150.dp)
-                                .background(Color(0xFF8bc6b0), shape = RoundedCornerShape(15.dp))
-                                .clickable { /* Acción para Finanzas 1 */ }
-                        ) {
-                            Text(
-                                text = "Septiembre",
-                                color = Color.White,
-                                fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(150.dp)
-                                .background(Color(0xFF94E1BE), shape = RoundedCornerShape(15.dp))
-                                .clickable { /* Acción para Finanzas 2 */ }
-                        ) {
-                            Text(
-                                text = "Octubre",
-                                color = Color.White,
-                                fontSize = 25.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
+                        MonthCarousel(onMonthClick = {
+                            navController.navigate("informe")
+                        })
                     }
                 }
                 item {
                     // Reservar área section
                     Box(
                         modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center // Alinea el texto en el centro
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Reservar área",
-                            fontSize = 18.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.verde_oscuro),
                         )
@@ -167,11 +168,11 @@ fun MainScreen(navController: NavHostController) {
                     // Morosos section
                     Box(
                         modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.Center // Alinea el texto en el centro
+                        contentAlignment = Alignment.Center
                     ) {
                         Text(
                             text = "Morosos",
-                            fontSize = 18.sp,
+                            fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.verde_oscuro),
                         )
@@ -183,95 +184,16 @@ fun MainScreen(navController: NavHostController) {
                         overlayColor = colorResource(id = R.color.verde_oscuro),
                         text = "Morosos",
                         textColor = colorResource(id = R.color.verde_blanco),
-                        onClick = { /* Acción para Morosos */ }
+                        onClick = { navController.navigate("morosos") }
                     )
                 }
             }
-
-            // Diálogo de Avisos
-            if (showDialog) {
-                AlertDialog(
-                    onDismissRequest = { showDialog = false },
-                    title = {
-                        Text(
-                            text = "Avisos",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    text = {
-                        Column {
-                            // Campo de texto editable
-                            TextField(
-                                value = editableText,
-                                onValueChange = { editableText = it },
-                                label = { Text("Escribe aquí") },
-                                modifier = Modifier.fillMaxWidth()
-                            )
-                        }
-                    },
-                    confirmButton = {
-                        TextButton(onClick = { showDialog = false }) {
-                            Text("Guardar")
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showDialog = false }) {
-                            Text("Cancelar")
-                        }
-                    }
-                )
-            }
         }
+
+        // Diálogo de avisos
+        AvisoDialog(showDialog = showAvisoDialog, onDismiss = { showAvisoDialog = false })
     }
 }
-
-
-@Composable
-fun TopBar() {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp)
-                .background(color = colorResource(id = R.color.verde_medio)),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = "Condominio",
-                fontSize = 27.sp,
-                fontWeight = FontWeight.Bold,
-                color = colorResource(id = R.color.verde_blanco),
-                modifier = Modifier.padding(start = 15.dp)
-            )
-        }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(30.dp)
-                .background(color = colorResource(id = R.color.verde_claro)),
-            contentAlignment = Alignment.CenterStart
-        ) {
-            Text(
-                text = "Circuito \"nombre\"",
-                fontSize = 16.sp,
-                color = colorResource(id = R.color.verde_oscuro),
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(start = 15.dp)
-            )
-        }
-    }
-}
-
-/*@Preview(showBackground = true)
-@Composable
-fun PreviewMainScreen() {
-    MainScreen()
-}*/
 
 @Composable
 fun BoxWithImageBackground(
@@ -315,3 +237,76 @@ fun BoxWithImageBackground(
         )
     }
 }
+
+@Composable
+fun AvisoDialog(showDialog: Boolean, onDismiss: () -> Unit) {
+    if (showDialog) {
+        androidx.compose.material.AlertDialog(
+            onDismissRequest = onDismiss,
+            title = {
+                androidx.compose.material.Text(
+                    text = "AVISO",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.fillMaxWidth() // Centrar el título
+                )
+            },
+            text = {
+                Column {
+                    // Lista de avisos aleatorios
+                    val avisos = listOf(
+                        "Aviso 1: Reunión el viernes a las 7 PM.",
+                        "Aviso 2: Pago de mantenimiento hasta el 10 de cada mes.",
+                        "Aviso 3: Prohibido el uso de parrillas en el balcón.",
+                        "Aviso 4: Fiesta de vecinos el próximo sábado.",
+                        "Aviso 5: Inscripción para clases de yoga abiertas."
+                    )
+
+                    for (aviso in avisos) {
+                        androidx.compose.material.Text(
+                            text = aviso,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                androidx.compose.material.Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(Color(0xFF9AB4A3)),
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    androidx.compose.material.Text(
+                        text = "Cerrar",
+                        color = Color.White
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun MonthCarousel(onMonthClick: () -> Unit) { // Cambia (String) a ()
+    val months = listOf("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre")
+
+    LazyRow(
+        modifier = Modifier.padding(vertical = 16.dp)
+    ) {
+        items(months) { month ->
+            Button(
+                onClick = { onMonthClick() }, // Solo llama a onMonthClick sin argumentos
+                modifier = Modifier
+                    .padding(horizontal = 4.dp)
+                    .wrapContentWidth()
+                    .height(50.dp),
+                shape = RoundedCornerShape(10.dp)
+            ) {
+                Text(text = month, color = Color.White, fontSize = 18.sp, textAlign = TextAlign.Center)
+            }
+        }
+    }
+}
+
+

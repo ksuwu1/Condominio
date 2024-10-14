@@ -14,8 +14,10 @@ import com.ita.condominio.screens.BankPaymentScreen
 import com.ita.condominio.screens.CardPaymentScreen
 import com.ita.condominio.screens.ChangePasswordScreen
 import com.ita.condominio.screens.Config
+import com.ita.condominio.screens.InformeScreen
 import com.ita.condominio.screens.LogInScreen
 import com.ita.condominio.screens.LogoutScreen
+import com.ita.condominio.screens.MorosoScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
 import com.ita.condominio.screens.ReportsScreen
@@ -71,6 +73,8 @@ fun AppNavigation() {
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
         composable("reports") { ReportsScreen(navController) }
-
+        composable("morosos") { MorosoScreen(navController) }
+        composable("informe") {InformeScreen(navController) // Sin argumentos
+        }
     }
 }
