@@ -90,6 +90,7 @@ fun DisplayAmount(pendingAmount: Double) {
     )
 }
 
+
 // Función de previsualización
 @Preview(showBackground = true)
 @Composable
