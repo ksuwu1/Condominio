@@ -91,7 +91,7 @@ fun AccountScreen(navController: NavHostController) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Botón Iniciar Sesión
+        /* Botón Iniciar Sesión
         Button(
             onClick = { navController.navigate("login") },
             modifier = Modifier.fillMaxWidth(),
@@ -106,7 +106,7 @@ fun AccountScreen(navController: NavHostController) {
             )
             Spacer(modifier = Modifier.width(8.dp))
             Text(text = "Iniciar sesión", color = Color.Black)
-        }
+        }*/
 
         // Botón Cerrar Sesión
         Button(
