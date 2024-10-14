@@ -18,6 +18,7 @@ import com.ita.condominio.screens.LogInScreen
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
+import com.ita.condominio.screens.ReportsScreen
 import com.ita.condominio.screens.ReservationScreen
 import com.ita.condominio.screens.VisitorsScreen
 
@@ -69,6 +70,7 @@ fun AppNavigation() {
             BankPaymentScreen(navController,total) // Pasamos el total
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
+        composable("reports") { ReportsScreen(navController) }
 
     }
 }
