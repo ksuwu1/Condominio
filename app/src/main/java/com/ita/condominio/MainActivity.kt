@@ -50,7 +50,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "account") {
         composable("MainMenu") { MainScreen(navController) }
         composable("account") { AccountScreen(navController) }
