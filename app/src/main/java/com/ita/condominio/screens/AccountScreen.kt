@@ -110,7 +110,7 @@ fun AccountScreen(navController: NavHostController) {
 
         // Botón Cerrar Sesión
         Button(
-            onClick = { navController.navigate("logout") },
+            onClick = { navController.navigate("login") },
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(10.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
