@@ -70,7 +70,7 @@ fun LogInScreen(navController: NavHostController) {
 
         // Botón "Login" centrado
         Button(
-            onClick = { /* Accion de login */ },
+            onClick = { navController.navigate("payments") },
             modifier = Modifier.fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.verde_medio), // Color del boton
