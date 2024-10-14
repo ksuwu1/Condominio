@@ -23,6 +23,7 @@ import com.ita.condominio.screens.VisitorsScreen
 
 import com.ita.condominio.ui.theme.CondominioTheme
 import com.paypal.android.sdk.payments.PayPalService
+import com.ita.condominio.screens.ReportsScreen
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,7 +50,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
-
     NavHost(navController = navController, startDestination = "account") {
         composable("MainMenu") { MainScreen(navController) }
         composable("account") { AccountScreen(navController) }
@@ -61,14 +61,15 @@ fun AppNavigation() {
         composable("logout") { LogoutScreen(navController) }
         composable("paypal/{total}") { backStackEntry ->
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
-            PaypalScreen(total = total, navController = navController) // Pasamos el navController
+            PaypalScreen(total = total, navController = navController)
         }
+
         composable("tarjeta") { CardPaymentScreen() } // Pantalla de pago con tarjeta
         composable("banco/{total}") { backStackEntry ->
             val total = backStackEntry.arguments?.getString("total")?.toDouble() ?: 0.0
             BankPaymentScreen(navController,total) // Pasamos el total
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
-
+        composable("reports") { ReportsScreen(navController) } // Añadido
     }
 }
