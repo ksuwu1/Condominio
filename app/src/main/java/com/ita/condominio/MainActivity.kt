@@ -72,6 +72,5 @@ fun AppNavigation() {
         }
         composable("ChangePassword") { ChangePasswordScreen(navController) }
         composable("reports") { ReportsScreen(navController) } // Añadido
-
     }
 }
