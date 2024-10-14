@@ -65,7 +65,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a informes */ }
+            onClick = { navController.navigate("MainMenu") }
         )
         BottomNavigationItem(
             icon = {
@@ -76,7 +76,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { navController.navigate("MainMenu") }
+            onClick = {navController.navigate("payments")}
         )
         BottomNavigationItem(
             icon = {
@@ -87,7 +87,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                 )
             },
             selected = false,
-            onClick = { /* Navegar a Chat */ }
+            onClick = { navController.navigate("reports")  }
         )
         BottomNavigationItem(
             icon = {
