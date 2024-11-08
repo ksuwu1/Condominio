@@ -41,6 +41,7 @@ fun MainScreen(navController: NavHostController) {
     var showAvisoDialog by remember { mutableStateOf(false) }
 
     Scaffold(
+        modifier = Modifier.fillMaxWidth().fillMaxWidth(),
         bottomBar = { BottomNavigationBar(navController) },
         containerColor = Color.White // Color de fondo del Scaffold
     ) { innerPadding ->
@@ -114,7 +115,7 @@ fun MainScreen(navController: NavHostController) {
                         overlayColor = colorResource(id = R.color.verde_oscuro),
                         text = "Avisos",
                         textColor = colorResource(id = R.color.verde_blanco),
-                        onClick = { showAvisoDialog = true } // Abre el diálogo al hacer clic
+                        onClick = { navController.navigate("notices") }
                     )
                 }
                 item {
@@ -299,11 +300,23 @@ fun MonthCarousel(onMonthClick: () -> Unit) { // Cambia (String) a ()
                 onClick = { onMonthClick() }, // Solo llama a onMonthClick sin argumentos
                 modifier = Modifier
                     .padding(horizontal = 4.dp)
+                    //.size(120.dp) // Hacer que el botón sea cuadrado (60x60)
                     .wrapContentWidth()
-                    .height(50.dp),
-                shape = RoundedCornerShape(10.dp)
+                    .background(Color(0xFFC4DAD2))
+                    .height(155.dp)
+                    .width(155.dp),
+                shape = RoundedCornerShape(10.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF5c7c74))
+
             ) {
-                Text(text = month, color = Color.White, fontSize = 18.sp, textAlign = TextAlign.Center)
+                Text(
+                    text = month,
+                    color = Color.White,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
