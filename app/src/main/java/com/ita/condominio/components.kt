@@ -25,8 +25,8 @@ import androidx.navigation.NavHostController
 
 //import com.ita.condominio.screens.MainMenuScreen
 
-import com.ita.condominio.screens.AccountScreen
-
+//import com.ita.condominio.screens.AccountScreen
+import com.ita.condominio.screens.ReportsScreen
 
 @Composable
 fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {

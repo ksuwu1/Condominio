@@ -20,7 +20,8 @@ import com.ita.condominio.CustomHeader
 
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
-    val pendingAmount = 0.00 // Cambia esto por el monto que necesitas
+    val pendingAmount = 100.00 // Cambia esto por el monto que necesitas
+    val paymentConcept = "Reserva en Condominio" // Concepto de pago
 
     Column(
         modifier = Modifier
@@ -51,27 +52,28 @@ fun PaymentsScreen(navController: NavHostController) {
                 // Muestra la cantidad pendiente
                 DisplayAmount(pendingAmount = pendingAmount)
 
-                // Agrega un Column para los botones
-                Column(
+                // Agrega el botón de pago justo debajo de la cantidad pendiente
+                Button(
+                    onClick = { navController.navigate("paypal/${pendingAmount}") }, // Navegar a PayPalScreen con el monto pendiente
                     modifier = Modifier
+                        .padding(top = 16.dp) // Espacio entre el monto y el botón
+                        .height(48.dp)
                         .fillMaxWidth()
-                        .padding(top = 16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .background(Color(0xFFC4D9D2), RoundedCornerShape(8.dp)),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2),
+                        contentColor = Color.Black
+                    )
                 ) {
-                    Button(
-                        onClick = { navController.navigate("paypal/${pendingAmount}") }, // Navegar a PayPalScreen con el monto pendiente
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .height(48.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFFC4D9D2),
-                            contentColor = Color.Black
-                        )
-                    ) {
-                        Text(text = "Paga en línea")
-                    }
+                    Text(text = "Paga en línea", fontSize = 18.sp)
                 }
+
+                // Desglose de la información del pago
+                Spacer(modifier = Modifier.height(32.dp)) // Espacio entre el botón y el desglose
+                PaymentDetails(
+                    amount = pendingAmount,
+                    concept = paymentConcept
+                )
             }
         }
 
@@ -83,11 +85,59 @@ fun PaymentsScreen(navController: NavHostController) {
 // Método que acepta un argumento y muestra el pendiente a pagar
 @Composable
 fun DisplayAmount(pendingAmount: Double) {
-    Text(
-        text = "$ $pendingAmount", // Muestra la cantidad
-        style = MaterialTheme.typography.bodyLarge.copy(fontSize = 50.sp),
-        modifier = Modifier.padding(top = 8.dp) // Espacio entre el texto de la cantidad y el contenido superior
-    )
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp), // Espacio entre el texto de la cantidad y el contenido superior
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "$ $pendingAmount", // Muestra la cantidad
+            style = MaterialTheme.typography.bodyLarge.copy(fontSize = 50.sp)
+        )
+    }
+}
+
+@Composable
+fun PaymentDetails(amount: Double, concept: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize() // Ocupa todo el espacio disponible
+            .padding(16.dp), // Opcional: agrega un margen alrededor del contenido
+        contentAlignment = Alignment.Center // Centra el contenido en el medio
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center, // Asegura que el contenido esté centrado verticalmente
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // Total a pagar, centrado
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Total a pagar: $$amount",
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
+                    color = Color.Gray
+                )
+            }
+
+            Spacer(modifier = Modifier.height(16.dp)) // Espacio entre Total a pagar y Concepto
+
+            // Concepto, también centrado
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Concepto: $concept",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            }
+        }
+    }
 }
 
 
