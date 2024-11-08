@@ -18,6 +18,7 @@ import com.ita.condominio.screens.InformeScreen
 import com.ita.condominio.screens.LogInScreen
 import com.ita.condominio.screens.LogoutScreen
 import com.ita.condominio.screens.MorosoScreen
+import com.ita.condominio.screens.NoticesScreen
 import com.ita.condominio.screens.PaymentsScreen
 import com.ita.condominio.screens.PaypalScreen
 import com.ita.condominio.screens.ReportsScreen
@@ -55,6 +56,7 @@ fun AppNavigation() {
 
     NavHost(navController = navController, startDestination = "login") {
         composable("MainMenu") { MainScreen(navController) }
+        composable("notices") { NoticesScreen(navController) } //Nueva Pantalla de avisos
         composable("account") { AccountScreen(navController) }
         composable("accountDetails") { AccountDetailsScreen(navController) }
         composable("visitors") { VisitorsScreen(navController) }

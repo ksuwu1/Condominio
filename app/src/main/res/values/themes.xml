@@ -6,7 +6,10 @@
         <item name="android:statusBarColor">@color/verde_medio</item>
 
         <!-- Configurar los iconos oscuros para la barra de estado (opcional) -->
-        <item name="android:windowLightStatusBar">false</item> <!-- Usa "false" si el color es oscuro y prefieres iconos claros -->
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Cambiar el color de la barra de navegación (inferior) -->
+        <item name="android:navigationBarColor">@color/verde_claro</item>
     </style>
 
 </resources>
