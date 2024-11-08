@@ -24,8 +24,10 @@ import androidx.compose.material.icons.filled.AccessTime
 import androidx.compose.material.icons.filled.CalendarToday
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
-
 import java.util.*
+import android.content.Intent
+import android.provider.CalendarContract
+import android.app.AlertDialog
 
 @Composable
 fun ReservationScreen(navController: NavHostController) {
@@ -74,6 +76,41 @@ fun ReservationScreen(navController: NavHostController) {
         { _, hourOfDay, minute -> horaCierre = String.format("%02d:%02d", hourOfDay, minute) },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
+
+    // Estado para controlar la visibilidad del diálogo
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Función para agregar el evento al calendario
+    fun addEventToCalendar(context: android.content.Context) {
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, "Reserva de Espacio")
+            putExtra(CalendarContract.Events.DESCRIPTION, "Visitantes: $visitantes")
+
+            // Parsear fecha y hora
+            val parts = fecha.split("/")
+            val dateCalendar = Calendar.getInstance().apply {
+                set(Calendar.YEAR, parts[2].toInt())
+                set(Calendar.MONTH, parts[1].toInt() - 1)
+                set(Calendar.DAY_OF_MONTH, parts[0].toInt())
+            }
+            val startHourParts = horaInicio.split(":")
+            val endHourParts = horaCierre.split(":")
+
+            val startCalendar = dateCalendar.clone() as Calendar
+            startCalendar.set(Calendar.HOUR_OF_DAY, startHourParts[0].toInt())
+            startCalendar.set(Calendar.MINUTE, startHourParts[1].toInt())
+
+            val endCalendar = dateCalendar.clone() as Calendar
+            endCalendar.set(Calendar.HOUR_OF_DAY, endHourParts[0].toInt())
+            endCalendar.set(Calendar.MINUTE, endHourParts[1].toInt())
+
+            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startCalendar.timeInMillis)
+            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endCalendar.timeInMillis)
+        }
+
+        context.startActivity(intent)
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -176,16 +213,48 @@ fun ReservationScreen(navController: NavHostController) {
                     modifier = Modifier.fillMaxWidth(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
                 )
+
+
+
+                // Botón para agregar evento al calendario
                 Spacer(modifier = Modifier.height(16.dp))
-                // Total a pagar
-                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
-                    Text(text = "Total a pagar: \$$total", fontSize = 30.sp, fontWeight = FontWeight.Bold)
+                Button(
+                    onClick = { showDialog = true },
+                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                ) {
+                    Text("Agregar evento a calendario")
                 }
 
-                // Espacio entre total a pagar y método de pago
+                // Confirmar si agregar al calendario
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        title = { Text("Agregar evento al calendario") },
+                        text = { Text("¿Desea agregar este evento a su calendario?") },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    addEventToCalendar(navController.context)
+                                    showDialog = false
+                                }
+                            ) {
+                                Text("Sí")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = { showDialog = false }
+                            ) {
+                                Text("No")
+                            }
+                        }
+                    )
+                }
+
+                // Espacio entre el botón y el total a pagar
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Método de pago
+                // Total a pagar
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     Text(text = "Método de pago", fontSize = 20.sp, fontWeight = FontWeight.Bold)
                 }
@@ -209,11 +278,10 @@ fun ReservationScreen(navController: NavHostController) {
             }
         }
 
-        // BottomNavigationBar fijo en la parte inferior
-        BottomNavigationBar(navController)
+        // Barra de navegación inferior
+        BottomNavigationBar(navController = navController)
     }
 }
-
 @Composable
 fun PaymentMethodButton(iconRes: Int, text: String, onClick: () -> Unit) {
     Column(

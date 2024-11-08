@@ -80,6 +80,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(kotlin("script-runtime"))
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
+    implementation("androidx.appcompat:appcompat:1.7.0")
 
 
 }
