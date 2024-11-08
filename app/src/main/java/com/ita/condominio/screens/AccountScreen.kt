@@ -77,7 +77,7 @@ fun AccountScreen(navController: NavHostController) {
                 AccountOption("Cuenta", R.drawable.user, "accountDetails"),
                 AccountOption("Visitantes", R.drawable.visitors, "visitors"),
                 AccountOption("Reservación", R.drawable.reserv, "reservation"),
-                AccountOption("Pagos", R.drawable.pay, "payments")
+
             )
 
             items(accountOptions) { option ->

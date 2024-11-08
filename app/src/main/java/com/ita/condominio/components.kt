@@ -59,8 +59,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationItem(
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.reporte),
-                    contentDescription = "Informes",
+                    painter = painterResource(id = R.drawable.home),
+                    contentDescription = "Home",
                     modifier = Modifier.size(30.dp)
                 )
             },
@@ -70,8 +70,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationItem(
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.home),
-                    contentDescription = "Home",
+                    painter = painterResource(id = R.drawable.peso),
+                    contentDescription = "Pagos",
                     modifier = Modifier.size(30.dp)
                 )
             },
