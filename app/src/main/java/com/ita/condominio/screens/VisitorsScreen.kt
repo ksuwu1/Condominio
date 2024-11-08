@@ -3,6 +3,7 @@ package com.ita.condominio.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,23 +24,21 @@ import com.ita.condominio.CustomHeader
 import java.util.*
 import com.ita.condominio.R
 
+
 @Composable
 fun VisitorsScreen(navController: NavHostController) {
     var visitors by remember { mutableStateOf(0) }
     var selectedDate by remember { mutableStateOf("") }
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var visitHistory by remember { mutableStateOf(listOf<VisitRecord>()) }
     val context = LocalContext.current
-
-    // Estado para controlar el diálogo de alerta
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Encabezado personalizado
         CustomHeader(title = "Registro de Visitas")
 
-        // Contenido desplazable con LazyColumn
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -48,27 +47,22 @@ fun VisitorsScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                // Columna para el icono y el texto
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth() // Asegura que ocupe todo el ancho
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Icono encima del texto
                     Icon(
-                        painter = painterResource(id = R.drawable.visitors), // Cambia a tu icono deseado
+                        painter = painterResource(id = R.drawable.visitors),
                         contentDescription = "Número de visitantes",
-                        modifier = Modifier.size(48.dp) // Ajusta el tamaño del icono según sea necesario
+                        modifier = Modifier.size(48.dp)
                     )
-
-                    // Texto centrado
                     Text(
                         text = "Ingrese el número de visitantes:",
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(top = 8.dp) // Espaciado entre el icono y el texto
+                        modifier = Modifier.padding(top = 8.dp)
                     )
                 }
 
-                // Resto del contenido...
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
@@ -86,7 +80,6 @@ fun VisitorsScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Selector de fecha
                 val calendar = Calendar.getInstance()
                 val datePickerDialog = DatePickerDialog(
                     context,
@@ -104,11 +97,12 @@ fun VisitorsScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para generar código QR
                 Button(onClick = {
                     if (selectedDate.isNotEmpty()) {
-                        qrBitmap = generateQRCode("Visitantes: $visitors, Fecha: $selectedDate")
-                        showDialog = true // Mostrar el diálogo después de generar el QR
+                        val newQRCode = generateQRCode("Visitantes: $visitors, Fecha: $selectedDate")
+                        qrBitmap = newQRCode
+                        visitHistory = visitHistory + VisitRecord(visitors, selectedDate, newQRCode)
+                        showDialog = true
                     } else {
                         Toast.makeText(context, "Seleccione una fecha", Toast.LENGTH_SHORT).show()
                     }
@@ -118,14 +112,69 @@ fun VisitorsScreen(navController: NavHostController) {
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Mostrar código QR si se generó
                 qrBitmap?.let {
                     Image(bitmap = it.asImageBitmap(), contentDescription = "QR Code", modifier = Modifier.size(200.dp))
                 }
             }
+
+            // Agregar un divisor visual entre el formulario y el historial
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Divider(color = Color.Gray, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Historial de Visitas", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Mostrar el historial de visitas registradas
+            items(visitHistory) { record ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Visitantes: ${record.visitors}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Text(
+                            text = "Fecha: ${record.date}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            bitmap = record.qrCode.asImageBitmap(),
+                            contentDescription = "QR Code",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                visitHistory = visitHistory.filter { it != record }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFCDD2))
+                        ) {
+                            Text("Eliminar")
+                        }
+                    }
+                }
+            }
+
+
         }
 
-        // Mostrar el diálogo de alerta
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
@@ -139,7 +188,6 @@ fun VisitorsScreen(navController: NavHostController) {
             )
         }
 
-        // Barra de navegación inferior
         BottomNavigationBar(navController)
     }
 }
