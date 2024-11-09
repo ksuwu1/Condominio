@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -110,22 +111,50 @@ fun PaymentsScreen(navController: NavHostController) {
             }
         }
 
-        // Mostrar los adeudos en una tabla
-        Column(modifier = Modifier.padding(60.dp)) {
-            // Título de los adeudos
-            Text(
-                text = "Tus Adeudos:",
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
+        // Card que contiene los adeudos
+        Card(
+            modifier = Modifier
+                .padding(16.dp) // Márgenes alrededor de la tarjeta
+                .fillMaxWidth() // Hace que la tarjeta tenga el ancho completo del dispositivo
+                .align(Alignment.CenterHorizontally), // Centra la tarjeta
+            shape = RoundedCornerShape(16.dp), // Esquinas redondeadas
+            elevation = 8.dp // Sombra para dar efecto de elevación
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(16.dp) // Espacio dentro de la tarjeta
+                    .fillMaxWidth()
+            ) {
+                // Título de los adeudos
+                Text(
+                    text = "Tus Adeudos:",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
-            // Lista de adeudos
-            LazyColumn {
-                items(adeudos.value) { adeudo ->
-                    Row(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
-                        Text(text = adeudo.descripcion, modifier = Modifier.weight(1f).padding(end = 16.dp))
-                        Text(text = "$${adeudo.cantidad}", modifier = Modifier.weight(1f))
+                // Lista de adeudos
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
+                ) {
+                    items(adeudos.value) { adeudo ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp) // Ajuste de espacio alrededor de cada fila
+                                .background(MaterialTheme.colorScheme.secondaryContainer, RoundedCornerShape(8.dp))
+                        ) {
+                            Text(
+                                text = adeudo.descripcion,
+                                modifier = Modifier.weight(1f).padding(end = 16.dp),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            Text(
+                                text = "$${adeudo.cantidad}",
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
                     }
                 }
             }
@@ -159,5 +188,3 @@ fun PaymentsScreenPreview() {
     val navController = rememberNavController() // Crea un NavHostController simulado
     PaymentsScreen(navController = navController)
 }
-
-
