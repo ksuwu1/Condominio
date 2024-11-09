@@ -1,4 +1,3 @@
-
 package com.ita.condominio.screens
 
 import androidx.compose.foundation.background
@@ -21,6 +20,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
 import kotlinx.coroutines.launch
+import androidx.compose.ui.platform.LocalContext
 
 // Modelo para los adeudos
 data class Adeudo(
@@ -61,6 +62,15 @@ fun PaymentsScreen(navController: NavHostController) {
 
     // Calculamos el monto pendiente sumando los adeudos
     val pendingAmount by remember { derivedStateOf { adeudos.value.sumOf { it.cantidad } } }
+
+    // Parámetros para el PDF
+    val bankName = "Banco Ejemplo"
+    val accountNumber = "1234567890"
+    val referenceNumber = "REF12345"
+    val nombreCompleto = "Juan Pérez"
+
+    // Usamos LocalContext para obtener el contexto
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -104,6 +114,32 @@ fun PaymentsScreen(navController: NavHostController) {
                     )
                 ) {
                     Text(text = "Paga en línea", fontSize = 18.sp)
+                }
+
+                // Agregar el botón para pagar por referencia bancaria
+                Button(
+                    onClick = {
+                        // Llamada a la función para generar el PDF
+                        PDFGenerator.generarFichaPDF(
+                            context = context,
+                            bankName = bankName,
+                            accountNumber = accountNumber,
+                            referenceNumber = referenceNumber,
+                            nombreCompleto = nombreCompleto,
+                            totalAmount = pendingAmount
+                        )
+                    },
+                    modifier = Modifier
+                        .padding(top = 16.dp) // Espacio entre los botones
+                        .height(48.dp)
+                        .fillMaxWidth()
+                        .background(Color(0xFFC4D9D2), RoundedCornerShape(8.dp)),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2),
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Text(text = "Paga por referencia bancaria", fontSize = 18.sp)
                 }
 
                 // Desglose de la información del pago
