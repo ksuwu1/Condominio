@@ -1,3 +1,4 @@
+
 package com.ita.condominio.screens
 
 import androidx.compose.foundation.background
@@ -50,8 +51,6 @@ object morososRepository {
 fun PaymentsScreen(navController: NavHostController) {
     // Estado para los adeudos
     val adeudos = remember { mutableStateOf(emptyList<Adeudo>()) }
-
-    val paymentConcept = "Reserva en Condominio" // Concepto de pago
 
     // Simulamos la carga de los adeudos al inicio
     LaunchedEffect(Unit) {
@@ -108,10 +107,6 @@ fun PaymentsScreen(navController: NavHostController) {
 
                 // Desglose de la información del pago
                 Spacer(modifier = Modifier.height(32.dp)) // Espacio entre el botón y el desglose
-                PaymentDetails(
-                    amount = pendingAmount,
-                    concept = paymentConcept
-                )
             }
         }
 
@@ -157,48 +152,6 @@ fun DisplayAmount(pendingAmount: Double) {
     }
 }
 
-@Composable
-fun PaymentDetails(amount: Double, concept: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize() // Ocupa todo el espacio disponible
-            .padding(16.dp), // Opcional: agrega un margen alrededor del contenido
-        contentAlignment = Alignment.Center // Centra el contenido en el medio
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center, // Asegura que el contenido esté centrado verticalmente
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            // Total a pagar, centrado
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Total a pagar: $$amount",
-                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 20.sp),
-                    color = Color.Gray
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp)) // Espacio entre Total a pagar y Concepto
-
-            // Concepto, también centrado
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Concepto: $concept",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
-        }
-    }
-}
-
 // Función de previsualización
 @Preview(showBackground = true)
 @Composable
@@ -206,3 +159,5 @@ fun PaymentsScreenPreview() {
     val navController = rememberNavController() // Crea un NavHostController simulado
     PaymentsScreen(navController = navController)
 }
+
+
