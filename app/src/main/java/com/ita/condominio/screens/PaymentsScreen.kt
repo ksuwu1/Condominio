@@ -2,14 +2,24 @@ package com.ita.condominio.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -17,15 +27,43 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
+import kotlinx.coroutines.launch
+
+// Modelo para los adeudos
+data class Adeudo(
+    val descripcion: String,
+    val cantidad: Double
+)
+
+// Repositorio simulado para obtener los adeudos
+object morososRepository {
+    fun getAdeudosByCasa(numeroCasa: String): List<Adeudo> {
+        // Aquí se simula obtener los adeudos, debes reemplazar esto con tu lógica real
+        return listOf(
+            Adeudo("Pago de mantenimiento", 50.0),
+            Adeudo("Pago de servicios", 30.0)
+        )
+    }
+}
 
 @Composable
 fun PaymentsScreen(navController: NavHostController) {
-    val pendingAmount = 100.00 // Cambia esto por el monto que necesitas
+    // Estado para los adeudos
+    val adeudos = remember { mutableStateOf(emptyList<Adeudo>()) }
+
     val paymentConcept = "Reserva en Condominio" // Concepto de pago
 
+    // Simulamos la carga de los adeudos al inicio
+    LaunchedEffect(Unit) {
+        // Aquí simulamos obtener los adeudos de la casa con número "123", puedes reemplazarlo por la lógica real
+        adeudos.value = morososRepository.getAdeudosByCasa("123") // Ejemplo con un número de casa
+    }
+
+    // Calculamos el monto pendiente sumando los adeudos
+    val pendingAmount by remember { derivedStateOf { adeudos.value.sumOf { it.cantidad } } }
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         // Encabezado de la pantalla
         CustomHeader(title = "Pagos")
@@ -46,7 +84,7 @@ fun PaymentsScreen(navController: NavHostController) {
                 Text(
                     text = "Pendiente de pagar",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(top = 16.dp)
+                    modifier = Modifier.padding(top = 10.dp)
                 )
 
                 // Muestra la cantidad pendiente
@@ -74,6 +112,27 @@ fun PaymentsScreen(navController: NavHostController) {
                     amount = pendingAmount,
                     concept = paymentConcept
                 )
+            }
+        }
+
+        // Mostrar los adeudos en una tabla
+        Column(modifier = Modifier.padding(60.dp)) {
+            // Título de los adeudos
+            Text(
+                text = "Tus Adeudos:",
+                fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+
+            // Lista de adeudos
+            LazyColumn {
+                items(adeudos.value) { adeudo ->
+                    Row(modifier = Modifier.padding(8.dp).fillMaxWidth()) {
+                        Text(text = adeudo.descripcion, modifier = Modifier.weight(1f).padding(end = 16.dp))
+                        Text(text = "$${adeudo.cantidad}", modifier = Modifier.weight(1f))
+                    }
+                }
             }
         }
 
@@ -139,7 +198,6 @@ fun PaymentDetails(amount: Double, concept: String) {
         }
     }
 }
-
 
 // Función de previsualización
 @Preview(showBackground = true)
