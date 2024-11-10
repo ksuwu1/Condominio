@@ -220,7 +220,13 @@ fun ReservationScreen(navController: NavHostController) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { showDialog = true },
-                    modifier = Modifier.fillMaxWidth().padding(16.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                        contentColor = Color.Black // Color del texto
+                    )
                 ) {
                     Text("Agregar evento a calendario")
                 }
@@ -236,14 +242,22 @@ fun ReservationScreen(navController: NavHostController) {
                                 onClick = {
                                     addEventToCalendar(navController.context)
                                     showDialog = false
-                                }
+                                },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                                    contentColor = Color.Black // Color del texto
+                                )
                             ) {
                                 Text("Sí")
                             }
                         },
                         dismissButton = {
                             Button(
-                                onClick = { showDialog = false }
+                                onClick = { showDialog = false },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                                    contentColor = Color.Black // Color del texto
+                                )
                             ) {
                                 Text("No")
                             }
