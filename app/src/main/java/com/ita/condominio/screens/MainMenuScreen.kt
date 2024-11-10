@@ -172,7 +172,7 @@ fun MainScreen(navController: NavHostController) {
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Morosos",
+                            text = "Pendientes de pago",
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
                             color = colorResource(id = R.color.verde_oscuro),
@@ -183,16 +183,13 @@ fun MainScreen(navController: NavHostController) {
                     BoxWithImageBackground(
                         imageRes = R.drawable.morosos,
                         overlayColor = colorResource(id = R.color.verde_oscuro),
-                        text = "Morosos",
+                        text = "Pendientes",
                         textColor = colorResource(id = R.color.verde_blanco),
                         onClick = { navController.navigate("morosos") }
                     )
                 }
             }
         }
-
-        // Diálogo de avisos
-        AvisoDialog(showDialog = showAvisoDialog, onDismiss = { showAvisoDialog = false })
     }
 }
 
@@ -239,54 +236,6 @@ fun BoxWithImageBackground(
     }
 }
 
-@Composable
-fun AvisoDialog(showDialog: Boolean, onDismiss: () -> Unit) {
-    if (showDialog) {
-        androidx.compose.material.AlertDialog(
-            onDismissRequest = onDismiss,
-            title = {
-                androidx.compose.material.Text(
-                    text = "AVISO",
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth() // Centrar el título
-                )
-            },
-            text = {
-                Column {
-                    // Lista de avisos aleatorios
-                    val avisos = listOf(
-                        "Aviso 1: Reunión el viernes a las 7 PM.",
-                        "Aviso 2: Pago de mantenimiento hasta el 10 de cada mes.",
-                        "Aviso 3: Prohibido el uso de parrillas en el balcón.",
-                        "Aviso 4: Fiesta de vecinos el próximo sábado.",
-                        "Aviso 5: Inscripción para clases de yoga abiertas."
-                    )
-
-                    for (aviso in avisos) {
-                        androidx.compose.material.Text(
-                            text = aviso,
-                            modifier = Modifier.padding(vertical = 4.dp)
-                        )
-                    }
-                }
-            },
-            confirmButton = {
-                androidx.compose.material.Button(
-                    onClick = onDismiss,
-                    colors = ButtonDefaults.buttonColors(Color(0xFF9AB4A3)),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    androidx.compose.material.Text(
-                        text = "Cerrar",
-                        color = Color.White
-                    )
-                }
-            }
-        )
-    }
-}
 
 @Composable
 fun MonthCarousel(onMonthClick: () -> Unit) { // Cambia (String) a ()
