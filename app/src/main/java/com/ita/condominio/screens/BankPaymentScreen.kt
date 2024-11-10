@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
+import com.ita.condominio.CustomHeader2
 import java.io.OutputStream
 
 @Composable
@@ -41,7 +42,7 @@ fun BankPaymentScreen(navController: NavHostController, totalAmount: Double) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Header con el título dinámico
-        CustomHeader(title = "Pago Bancario")
+        CustomHeader2(navController = navController, title = "Pago Bancario")
 
         // Contenido desplazable con LazyColumn
         LazyColumn(

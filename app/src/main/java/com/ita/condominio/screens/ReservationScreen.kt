@@ -28,6 +28,7 @@ import java.util.*
 import android.content.Intent
 import android.provider.CalendarContract
 import android.app.AlertDialog
+import com.ita.condominio.CustomHeader2
 
 @Composable
 fun ReservationScreen(navController: NavHostController) {
@@ -87,6 +88,7 @@ fun ReservationScreen(navController: NavHostController) {
             putExtra(CalendarContract.Events.TITLE, "Reserva de Espacio")
             putExtra(CalendarContract.Events.DESCRIPTION, "Visitantes: $visitantes")
 
+
             // Parsear fecha y hora
             val parts = fecha.split("/")
             val dateCalendar = Calendar.getInstance().apply {
@@ -116,7 +118,7 @@ fun ReservationScreen(navController: NavHostController) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Header personalizable
-        CustomHeader(title = "Reservaciones")
+        CustomHeader2(navController = navController, title = "Reservaciones")
 
         // Contenido desplazable con LazyColumn
         LazyColumn(

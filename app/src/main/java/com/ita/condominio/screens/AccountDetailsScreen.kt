@@ -17,6 +17,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
+import com.ita.condominio.CustomHeader2
 import com.ita.condominio.R
 
 
@@ -32,8 +33,8 @@ fun AccountDetailsScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize()) {
-        // CustomHeader fijo en la parte superior
-        CustomHeader(title = "Datos propietario")
+        // CustomHeader2 with back arrow and title
+        CustomHeader2(navController = navController, title = "Datos propietario")
 
         // Contenido desplazable con LazyColumn
         LazyColumn(
@@ -129,8 +130,6 @@ fun AccountDetailsScreen(navController: NavHostController) {
         BottomNavigationBar(navController)
     }
 }
-
-
 
 @Composable
 fun EditableField(label: String, value: String, isEditable: Boolean, onValueChange: (String) -> Unit) {

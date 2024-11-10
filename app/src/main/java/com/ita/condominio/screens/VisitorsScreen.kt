@@ -20,10 +20,9 @@ import androidx.navigation.NavHostController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import com.ita.condominio.BottomNavigationBar
-import com.ita.condominio.CustomHeader
-import java.util.*
+import com.ita.condominio.CustomHeader2 // Aquí importamos CustomHeader2
 import com.ita.condominio.R
-
+import java.util.*
 
 @Composable
 fun VisitorsScreen(navController: NavHostController) {
@@ -37,7 +36,8 @@ fun VisitorsScreen(navController: NavHostController) {
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        CustomHeader(title = "Registro de Visitas")
+        // Usamos CustomHeader2 en lugar de CustomHeader
+        CustomHeader2(navController = navController, title = "Registro de Visitas")
 
         LazyColumn(
             modifier = Modifier
@@ -171,8 +171,6 @@ fun VisitorsScreen(navController: NavHostController) {
                     }
                 }
             }
-
-
         }
 
         if (showDialog) {
