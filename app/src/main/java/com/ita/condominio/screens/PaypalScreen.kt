@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
+import com.ita.condominio.CustomHeader2
 import com.paypal.android.sdk.payments.PayPalPayment
 import com.paypal.android.sdk.payments.PayPalService
 import com.paypal.android.sdk.payments.PaymentActivity
@@ -60,7 +61,7 @@ fun PaypalScreen(total: Double, navController: NavHostController) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Header personalizable
-        CustomHeader(title = "Pago en línea PayPal")
+        CustomHeader2(navController = navController, title = "Pago en línea PayPal")
 
         // Contenido desplazable con LazyColumn
         LazyColumn(
