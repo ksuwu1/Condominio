@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+//import androidx.compose.foundation.layout.FlowRowScopeInstance.align
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -56,46 +57,51 @@ fun NoticeCard(notice: Notice) {
         )
     )
 
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp)
-            .shadow(4.dp, RoundedCornerShape(8.dp)),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Color.Gray)
-    ) {
-        Column(
+    Box(
+        modifier = Modifier.fillMaxWidth(), // Asegura que el Box ocupe todo el ancho
+        contentAlignment = Alignment.Center // Centra el contenido dentro del Box
+    ){
+        Card(
             modifier = Modifier
-                .background(brush = gradientBackground)
+                .width(400.dp)//mantiene un tamaño fijo de la publicacion
                 .padding(16.dp)
+                .shadow(4.dp, RoundedCornerShape(8.dp)),
+            shape = RoundedCornerShape(8.dp),
+            border = BorderStroke(1.dp, Color.Gray)
         ) {
-            // Encabezado del aviso
-            Text(
-                text = notice.title,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray,
-                fontSize = 16.sp
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier
+                    .background(brush = gradientBackground)
+                    .padding(16.dp)
+            ) {
+                // Encabezado del aviso
+                Text(
+                    text = notice.title,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    fontSize = 16.sp
+                )
+                Spacer(modifier = Modifier.height(8.dp))
 
-            // Cuerpo del aviso
-            Text(
-                text = notice.notice,
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = notice.date,
-                fontSize = 14.sp,
-                color = Color.Black
-            )
-            Text(
-                text = notice.bodytext,
-                fontSize = 14.sp,
-                color = Color.Black
-            )
+                // Cuerpo del aviso
+                Text(
+                    text = notice.notice,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 18.sp,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = notice.date,
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+                Text(
+                    text = notice.bodytext,
+                    fontSize = 14.sp,
+                    color = Color.Black
+                )
+            }
         }
     }
 }
@@ -192,7 +198,8 @@ fun NoticesScreen(navController: NavHostController) {
 
             // Lista de avisos individuales
             LazyColumn(
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 items(notices) { notice ->
                     NoticeCard(notice = notice)
