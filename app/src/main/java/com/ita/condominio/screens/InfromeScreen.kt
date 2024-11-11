@@ -3,7 +3,6 @@ package com.ita.condominio.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -14,8 +13,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.ita.condominio.Models.MaintenanceIncome
+import com.ita.condominio.Models.ReservationIncome
+import com.ita.condominio.Models.Expense
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.ui.graphics.vector.ImageVector
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InformeScreen(navController: NavHostController) {
     val month = "Marzo"
@@ -26,172 +30,180 @@ fun InformeScreen(navController: NavHostController) {
         MaintenanceIncome("003", "3", "Carlos García", month, 6750, "Sí")
     )
     val reservationIncomeData = listOf(
-        ReservationIncome("001", "1", "Sala de eventos", "01-10-2023", 2000, "Sí"),
-        ReservationIncome("002", "2", "Cancha de tenis", "05-10-2023", 1500, "No")
+        ReservationIncome("004", "4", "Sala de eventos", "01-10-2023", 2000, "Sí"),
+        ReservationIncome("005", "5", "Cancha de tenis", "05-10-2023", 1500, "No")
     )
     val expensesData = listOf(
-        Expense("001", "Mantenimiento", "01-10-2023", 2500),
-        Expense("002", "Reparaciones", "10-10-2023", 1000)
+        Expense("006", "Mantenimiento", "01-10-2023", 2500),
+        Expense("007", "Reparaciones", "10-10-2023", 1000)
     )
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Banner
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(Color(0xFF699C89)),
-                contentAlignment = Alignment.CenterStart
+    val maintenanceTotal = maintenanceIncomeData.sumOf { it.cantidad }
+    val reservationTotal = reservationIncomeData.sumOf { it.cantidad }
+    val expensesTotal = expensesData.sumOf { it.cantidad }
+    val finalTotal = totalIncome + maintenanceTotal + reservationTotal - expensesTotal
+
+    LazyColumn(modifier = Modifier.fillMaxSize()) {
+        // Banner con flecha de regreso
+        item {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Condominio",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(start = 16.dp),
-                    color = Color.White
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(30.dp)
-                    .background(Color(0xFFC4D9D2)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Informe del mes: $month",
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Gray
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .background(Color(0xFF699C89)),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Regresar",
+                                tint = Color.White
+                            )
+                        }
+                        Text(
+                            text = "Condominio",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(start = 8.dp),
+                            color = Color.White
+                        )
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(30.dp)
+                        .background(Color(0xFFC4D9D2)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "Informe del mes: $month",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color.Gray
+                    )
+                }
             }
         }
 
         // Saldo del mes anterior
-        Text(
-            text = "Saldo del mes anterior: $$totalIncome",
-            fontSize = 18.sp,
-            modifier = Modifier.padding(16.dp)
-        )
-
-        // Tabla de ingresos de mantenimiento
-        Text(
-            text = "Ingresos de mantenimiento",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
-        )
-        MaintenanceIncomeTable(data = maintenanceIncomeData)
-
-        // Tabla de ingresos de reservaciones
-        Text(
-            text = "Ingresos de reservaciones",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
-        )
-        ReservationIncomeTable(data = reservationIncomeData)
-
-        // Tabla de egresos
-        Text(
-            text = "Egresos",
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(16.dp)
-        )
-        ExpensesTable(data = expensesData)
-    }
-}
-
-@Composable
-fun MaintenanceIncomeTable(data: List<MaintenanceIncome>) {
-    LazyColumn {
-        // Encabezados de la tabla
         item {
-            LazyRow {
-                items(listOf("Folio", "No. Casa", "Nombre", "Mes", "Cantidad", "Transferencia")) { title ->
-                    Text(title, modifier = Modifier.padding(8.dp), fontWeight = FontWeight.Bold)
-                }
-            }
+            Text(
+                text = "Saldo del mes anterior: $$totalIncome",
+                fontSize = 18.sp,
+                modifier = Modifier.padding(16.dp)
+            )
         }
 
-        items(data) { item ->
-            LazyRow {
-                items(listOf(item.folio, item.noCasa, item.nombre, item.mes, item.cantidad.toString(), item.transferencia)) { value ->
-                    Text(value, modifier = Modifier.padding(8.dp))
-                }
-            }
+        // Secciones con tarjetas
+        item {
+            Text(
+                text = "Ingresos de mantenimiento",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        items(maintenanceIncomeData) { item ->
+            MaintenanceIncomeCard(item = item)
         }
 
-        // Sumar las cantidades
-        val total = data.sumOf { it.cantidad }
         item {
-            Text("Total: $$total", modifier = Modifier.padding(16.dp))
+            Text(
+                text = "Ingresos de reservaciones",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        items(reservationIncomeData) { item ->
+            ReservationIncomeCard(item = item)
+        }
+
+        item {
+            Text(
+                text = "Egresos",
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(16.dp)
+            )
+        }
+        items(expensesData) { item ->
+            ExpenseCard(item = item)
+        }
+
+        // Total del mes
+        item {
+            Text(
+                text = "Total del mes: $$finalTotal",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF1B5E20), // Color verde oscuro
+                modifier = Modifier.padding(16.dp)
+            )
         }
     }
 }
 
 @Composable
-fun ReservationIncomeTable(data: List<ReservationIncome>) {
-    LazyColumn {
-        // Encabezados de la tabla
-        item {
-            LazyRow {
-                items(listOf("Folio", "No. Casa", "Descripción", "Fecha", "Cantidad", "Transferencia")) { title ->
-                    Text(title, modifier = Modifier.padding(8.dp), fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-
-        items(data) { item ->
-            LazyRow {
-                items(listOf(item.folio, item.noCasa, item.descripcion, item.fecha, item.cantidad.toString(), item.transferencia)) { value ->
-                    Text(value, modifier = Modifier.padding(8.dp))
-                }
-            }
-        }
-
-        // Sumar las cantidades
-        val total = data.sumOf { it.cantidad }
-        item {
-            Text("Total: $$total", modifier = Modifier.padding(16.dp))
+fun MaintenanceIncomeCard(item: MaintenanceIncome) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFE0F2F1)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Casa: ${item.noCasa}")
+            Text(text = "Nombre: ${item.nombre}")
+            Text(text = "Mes: ${item.mes}")
+            Text(text = "Cantidad: \$${item.cantidad}")
+            Text(text = "Transferencia: ${item.transferencia}")
         }
     }
 }
 
 @Composable
-fun ExpensesTable(data: List<Expense>) {
-    LazyColumn {
-        // Encabezados de la tabla
-        item {
-            LazyRow {
-                items(listOf("Folio", "Descripción", "Fecha", "Cantidad")) { title ->
-                    Text(title, modifier = Modifier.padding(8.dp), fontWeight = FontWeight.Bold)
-                }
-            }
-        }
-
-        items(data) { item ->
-            LazyRow {
-                items(listOf(item.folio, item.descripcion, item.fecha, item.cantidad.toString())) { value ->
-                    Text(value, modifier = Modifier.padding(8.dp))
-                }
-            }
-        }
-
-        // Sumar las cantidades
-        val total = data.sumOf { it.cantidad }
-        item {
-            Text("Total: $$total", modifier = Modifier.padding(16.dp))
+fun ReservationIncomeCard(item: ReservationIncome) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF9C4)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Casa: ${item.noCasa}")
+            Text(text = "Descripción: ${item.descripcion}")
+            Text(text = "Fecha: ${item.fecha}")
+            Text(text = "Cantidad: \$${item.cantidad}")
+            Text(text = "Transferencia: ${item.transferencia}")
         }
     }
 }
 
-// Datos de ejemplo
-data class MaintenanceIncome(val folio: String, val noCasa: String, val nombre: String, val mes: String, val cantidad: Int, val transferencia: String)
-data class ReservationIncome(val folio: String, val noCasa: String, val descripcion: String, val fecha: String, val cantidad: Int, val transferencia: String)
-data class Expense(val folio: String, val descripcion: String, val fecha: String, val cantidad: Int)
+@Composable
+fun ExpenseCard(item: Expense) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(8.dp),
+        colors = CardDefaults.cardColors(containerColor = Color(0xFFFFCDD2)),
+        elevation = CardDefaults.cardElevation(4.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Descripción: ${item.descripcion}")
+            Text(text = "Fecha: ${item.fecha}")
+            Text(text = "Cantidad: \$${item.cantidad}")
+        }
+    }
+}

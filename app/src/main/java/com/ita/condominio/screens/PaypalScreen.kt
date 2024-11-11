@@ -25,6 +25,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader
+import com.ita.condominio.CustomHeader2
 import com.paypal.android.sdk.payments.PayPalPayment
 import com.paypal.android.sdk.payments.PayPalService
 import com.paypal.android.sdk.payments.PaymentActivity
@@ -60,7 +61,7 @@ fun PaypalScreen(total: Double, navController: NavHostController) {
         modifier = Modifier.fillMaxSize()
     ) {
         // Header personalizable
-        CustomHeader(title = "Pago en línea PayPal")
+        CustomHeader2(navController = navController, title = "Pago en línea PayPal")
 
         // Contenido desplazable con LazyColumn
         LazyColumn(
@@ -86,10 +87,15 @@ fun PaypalScreen(total: Double, navController: NavHostController) {
                     onClick = { iniciarPago(total, paymentLauncher, activity) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .background(Color(0xFFC4DAD2)) // verde_claro
+                        .padding(8.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2),
+                        contentColor = Color.Black
+                    )
+
+
                 ) {
-                    Text("Pagar con PayPal", color = Color.White) // Set button text color to white for contrast
+                    Text("Pagar con PayPal") // Set button text color to white for contrast
                 }
             }
         }

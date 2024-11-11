@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -25,8 +27,8 @@ import androidx.navigation.NavHostController
 
 //import com.ita.condominio.screens.MainMenuScreen
 
-import com.ita.condominio.screens.AccountScreen
-
+//import com.ita.condominio.screens.AccountScreen
+import com.ita.condominio.screens.ReportsScreen
 
 @Composable
 fun AccountOptionButton(text: String, iconRes: Int, onClick: () -> Unit) {
@@ -59,8 +61,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationItem(
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.reporte),
-                    contentDescription = "Informes",
+                    painter = painterResource(id = R.drawable.home),
+                    contentDescription = "Home",
                     modifier = Modifier.size(30.dp)
                 )
             },
@@ -70,8 +72,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavigationItem(
             icon = {
                 Icon(
-                    painter = painterResource(id = R.drawable.home),
-                    contentDescription = "Home",
+                    painter = painterResource(id = R.drawable.peso),
+                    contentDescription = "Pagos",
                     modifier = Modifier.size(30.dp)
                 )
             },
@@ -145,6 +147,62 @@ fun CustomHeader(title: String) {
         }
     }
 }
+
+@Composable
+fun CustomHeader2(navController: NavController, title: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // First bar with "Condominio" and back arrow
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(Color(0xFF699C89)),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    androidx.compose.material.Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Regresar",
+                        tint = Color.White // Color of the arrow
+                    )
+                }
+                Text(
+                    text = "Condominio",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = Color.White
+                )
+            }
+        }
+
+        // Second bar with dynamic title
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(30.dp)
+                .background(Color(0xFFC4D9D2)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = title,
+                fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.Gray
+            )
+        }
+    }
+}
+
 
 
 

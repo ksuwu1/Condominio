@@ -3,6 +3,7 @@ package com.ita.condominio.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,31 +16,32 @@ import androidx.compose.ui.unit.dp
 import android.app.DatePickerDialog
 import android.graphics.Bitmap
 import android.widget.Toast
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import com.ita.condominio.BottomNavigationBar
-import com.ita.condominio.CustomHeader
-import java.util.*
+import com.ita.condominio.CustomHeader2 // Aquí importamos CustomHeader2
+import com.ita.condominio.Models.VisitRecord
 import com.ita.condominio.R
+import java.util.*
 
 @Composable
 fun VisitorsScreen(navController: NavHostController) {
     var visitors by remember { mutableStateOf(0) }
     var selectedDate by remember { mutableStateOf("") }
     var qrBitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var visitHistory by remember { mutableStateOf(listOf<VisitRecord>()) }
     val context = LocalContext.current
-
-    // Estado para controlar el diálogo de alerta
     var showDialog by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
-        // Encabezado personalizado
-        CustomHeader(title = "Registro de Visitas")
+        // Usamos CustomHeader2 en lugar de CustomHeader
+        CustomHeader2(navController = navController, title = "Registro de Visitas")
 
-        // Contenido desplazable con LazyColumn
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
@@ -48,45 +50,43 @@ fun VisitorsScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
-                // Columna para el icono y el texto
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth() // Asegura que ocupe todo el ancho
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    // Icono encima del texto
                     Icon(
-                        painter = painterResource(id = R.drawable.visitors), // Cambia a tu icono deseado
+                        painter = painterResource(id = R.drawable.visitors),
                         contentDescription = "Número de visitantes",
-                        modifier = Modifier.size(48.dp) // Ajusta el tamaño del icono según sea necesario
+                        modifier = Modifier.size(48.dp)
                     )
-
-                    // Texto centrado
                     Text(
                         text = "Ingrese el número de visitantes:",
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(top = 8.dp) // Espaciado entre el icono y el texto
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center
                     )
                 }
 
-                // Resto del contenido...
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = { if (visitors > 0) visitors-- }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                    Button(onClick = { if (visitors > 0) visitors-- },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                         Text(text = "-")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = visitors.toString(), style = MaterialTheme.typography.headlineLarge)
                     Spacer(modifier = Modifier.width(16.dp))
-                    Button(onClick = { visitors++ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                    Button(onClick = { visitors++ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                         Text(text = "+")
                     }
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Selector de fecha
                 val calendar = Calendar.getInstance()
                 val datePickerDialog = DatePickerDialog(
                     context,
@@ -98,34 +98,92 @@ fun VisitorsScreen(navController: NavHostController) {
                     calendar.get(Calendar.DAY_OF_MONTH)
                 )
 
-                Button(onClick = { datePickerDialog.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                Button(onClick = { datePickerDialog.show() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                     Text(text = if (selectedDate.isEmpty()) "Seleccione la fecha" else "Fecha: $selectedDate")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para generar código QR
                 Button(onClick = {
                     if (selectedDate.isNotEmpty()) {
-                        qrBitmap = generateQRCode("Visitantes: $visitors, Fecha: $selectedDate")
-                        showDialog = true // Mostrar el diálogo después de generar el QR
+                        val newQRCode = generateQRCode("Visitantes: $visitors, Fecha: $selectedDate")
+                        qrBitmap = newQRCode
+                        visitHistory = visitHistory + VisitRecord(visitors, selectedDate, newQRCode)
+                        showDialog = true
                     } else {
                         Toast.makeText(context, "Seleccione una fecha", Toast.LENGTH_SHORT).show()
                     }
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                     Text(text = "Guardar")
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Mostrar código QR si se generó
                 qrBitmap?.let {
                     Image(bitmap = it.asImageBitmap(), contentDescription = "QR Code", modifier = Modifier.size(200.dp))
                 }
             }
+
+            // Agregar un divisor visual entre el formulario y el historial
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+                Divider(color = Color.Gray, thickness = 1.dp)
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(text = "Historial de Visitas", style = MaterialTheme.typography.headlineSmall)
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // Mostrar el historial de visitas registradas
+            items(visitHistory) { record ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 8.dp),
+                    elevation = CardDefaults.cardElevation(4.dp)
+                ) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "Visitantes: ${record.visitors}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Text(
+                            text = "Fecha: ${record.date}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Image(
+                            bitmap = record.qrCode.asImageBitmap(),
+                            contentDescription = "QR Code",
+                            modifier = Modifier
+                                .size(150.dp)
+                                .align(Alignment.CenterHorizontally)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(
+                            onClick = {
+                                visitHistory = visitHistory.filter { it != record }
+                            },
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFC4D9D2),
+                                contentColor = Color.Black
+                            )
+                        ) {
+                            Text("Eliminar")
+                        }
+                    }
+                }
+            }
         }
 
-        // Mostrar el diálogo de alerta
         if (showDialog) {
             AlertDialog(
                 onDismissRequest = { showDialog = false },
@@ -139,7 +197,6 @@ fun VisitorsScreen(navController: NavHostController) {
             )
         }
 
-        // Barra de navegación inferior
         BottomNavigationBar(navController)
     }
 }
