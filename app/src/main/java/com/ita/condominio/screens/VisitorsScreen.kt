@@ -21,6 +21,7 @@ import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader2 // Aquí importamos CustomHeader2
+import com.ita.condominio.Models.VisitRecord
 import com.ita.condominio.R
 import java.util.*
 

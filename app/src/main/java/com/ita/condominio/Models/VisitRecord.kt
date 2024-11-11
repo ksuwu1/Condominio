@@ -1,4 +1,4 @@
-package com.ita.condominio.screens
+package com.ita.condominio.Models
 
 import android.graphics.Bitmap
 
