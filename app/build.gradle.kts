@@ -82,5 +82,9 @@ dependencies {
     implementation ("com.google.accompanist:accompanist-systemuicontroller:0.33.0-alpha")
     implementation("androidx.appcompat:appcompat:1.7.0")
 
+    //Biometricos
+    implementation ("androidx.biometric:biometric:1.2.0-alpha03")
+    implementation("androidx.asynclayoutinflater:asynclayoutinflater-appcompat:1.1.0-alpha01")
+
 
 }
