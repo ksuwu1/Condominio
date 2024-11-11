@@ -87,10 +87,15 @@ fun PaypalScreen(total: Double, navController: NavHostController) {
                     onClick = { iniciarPago(total, paymentLauncher, activity) },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(8.dp)
-                        .background(Color(0xFFC4DAD2)) // verde_claro
+                        .padding(8.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2),
+                        contentColor = Color.Black
+                    )
+
+
                 ) {
-                    Text("Pagar con PayPal", color = Color.White) // Set button text color to white for contrast
+                    Text("Pagar con PayPal") // Set button text color to white for contrast
                 }
             }
         }

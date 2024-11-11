@@ -113,7 +113,12 @@ fun BankPaymentScreen(navController: NavHostController, totalAmount: Double) {
                             nombreCompleto,
                             totalAmount
                         )
-                    }
+                    },
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2),
+                        contentColor = Color.Black
+                    )
+
                 ) {
                     Text(text = "Generar ficha de pago")
                 }

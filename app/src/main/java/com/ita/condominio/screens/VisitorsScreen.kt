@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import android.app.DatePickerDialog
 import android.graphics.Bitmap
 import android.widget.Toast
+import androidx.compose.ui.Alignment.Companion.CenterVertically
+import androidx.compose.ui.text.style.TextAlign
 import androidx.navigation.NavHostController
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.qrcode.QRCodeWriter
@@ -60,21 +62,25 @@ fun VisitorsScreen(navController: NavHostController) {
                     Text(
                         text = "Ingrese el número de visitantes:",
                         style = MaterialTheme.typography.headlineMedium,
-                        modifier = Modifier.padding(top = 8.dp)
+                        modifier = Modifier
+                            .padding(top = 8.dp)
+                            .align(Alignment.CenterHorizontally),
+                        textAlign = TextAlign.Center
                     )
                 }
 
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Button(onClick = { if (visitors > 0) visitors-- }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                    Button(onClick = { if (visitors > 0) visitors-- },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                         Text(text = "-")
                     }
                     Spacer(modifier = Modifier.width(16.dp))
                     Text(text = visitors.toString(), style = MaterialTheme.typography.headlineLarge)
                     Spacer(modifier = Modifier.width(16.dp))
-                    Button(onClick = { visitors++ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                    Button(onClick = { visitors++ }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                         Text(text = "+")
                     }
                 }
@@ -92,7 +98,8 @@ fun VisitorsScreen(navController: NavHostController) {
                     calendar.get(Calendar.DAY_OF_MONTH)
                 )
 
-                Button(onClick = { datePickerDialog.show() }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                Button(onClick = { datePickerDialog.show() },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                     Text(text = if (selectedDate.isEmpty()) "Seleccione la fecha" else "Fecha: $selectedDate")
                 }
 
@@ -107,7 +114,7 @@ fun VisitorsScreen(navController: NavHostController) {
                     } else {
                         Toast.makeText(context, "Seleccione una fecha", Toast.LENGTH_SHORT).show()
                     }
-                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))) {
+                }, colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2), contentColor = Color.Black)) {
                     Text(text = "Guardar")
                 }
 
@@ -165,7 +172,10 @@ fun VisitorsScreen(navController: NavHostController) {
                             onClick = {
                                 visitHistory = visitHistory.filter { it != record }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFFFCDD2))
+                            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                containerColor = Color(0xFFC4D9D2),
+                                contentColor = Color.Black
+                            )
                         ) {
                             Text("Eliminar")
                         }
