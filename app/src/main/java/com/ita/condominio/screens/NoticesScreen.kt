@@ -39,6 +39,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.R
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.ui.platform.LocalConfiguration
 
 // Clase de datos para estructurar un aviso
 data class Notice(
@@ -136,6 +140,10 @@ fun NoticesScreen(navController: NavHostController) {
         )
     )
 
+    // Detectar orientación
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == android.content.res.Configuration.ORIENTATION_LANDSCAPE
+
     Scaffold(
         bottomBar = { BottomNavigationBar(navController) },
         containerColor = Color.White
@@ -197,9 +205,11 @@ fun NoticesScreen(navController: NavHostController) {
             }
 
             // Lista de avisos individuales
-            LazyColumn(
+            LazyVerticalGrid(
+                columns = if (isLandscape) GridCells.Fixed(2) else GridCells.Fixed(1),
                 contentPadding = PaddingValues(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(notices) { notice ->
                     NoticeCard(notice = notice)
