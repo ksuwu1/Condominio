@@ -66,7 +66,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         )
 
         // Insertar datos iniciales
-        insertInitialData(db)
+        //insertInitialData(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
