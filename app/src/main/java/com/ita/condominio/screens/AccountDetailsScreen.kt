@@ -163,3 +163,6 @@ fun PreviewAccountScreen() {
     val navController = rememberNavController() // Crea un controlador de navegación simulado
     AccountDetailsScreen(navController)
 }
+
+
+

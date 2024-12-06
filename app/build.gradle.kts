@@ -87,4 +87,8 @@ dependencies {
     implementation("androidx.asynclayoutinflater:asynclayoutinflater-appcompat:1.1.0-alpha01")
 
 
+
+    implementation ("androidx.appcompat:appcompat:1.6.1") // Para la compatibilidad con versiones anteriores
+    implementation ("androidx.core:core-ktx:1.10.1")
+
 }
