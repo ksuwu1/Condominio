@@ -54,7 +54,7 @@ fun MorosoScreen(navController: NavHostController, viewModel: MorosoViewModel = 
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 ) {
                     items(morosos) { moroso ->
-                        MorosoCard(
+                        MorosoCard( //
                             casa = moroso.casa.toString(),
                             descripcion = moroso.descripcion,
                             detalleDescripcion = moroso.detalleDescripcion,
