@@ -3,6 +3,7 @@ package com.ita.condominio
 import AccountDetailsScreen
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Surface
@@ -65,7 +66,17 @@ fun AppNavigation(navController: NavHostController, activity: AppCompatActivity,
         composable("MainMenu") { MainScreen(navController) }
         composable("notices") { NoticesScreen(navController) }
         composable("account") { AccountScreen(navController) }
-        composable("accountDetails") { AccountDetailsScreen(navController) }
+
+        composable("accountDetails/{userId}") { backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId")
+            if (userId != null) {
+                AccountDetailsScreen(navController, userId.toString())
+            } else {
+                Log.e("AppNavigation", "User ID is null")
+                // Opcional: navegar a una pantalla de error o mostrar un mensaje de error.
+            }
+        }
+
         composable("visitors") { VisitorsScreen(navController) }
         composable("reservation") { ReservationScreen(navController) }
         composable("payments") { PaymentsScreen(navController) }

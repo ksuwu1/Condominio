@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -94,4 +95,12 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
+    implementation ("androidx.room:room-runtime:2.5.0") // Usa la versión más reciente
+    val room_version= "2.6.1"
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:2.5.0")
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
 }

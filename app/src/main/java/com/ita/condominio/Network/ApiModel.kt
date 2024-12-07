@@ -16,3 +16,12 @@ data class LoginRequest(
     val correo: String,
     val password: String
 )
+
+data class UserRequest(
+    val nombre: String,
+    val apellido_pat: String,
+    val apellido_mat: String,
+    val tel_casa: String,
+    val cel: String,
+    val correo: String
+)

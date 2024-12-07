@@ -57,6 +57,7 @@ class DatabaseManager(private val context: Context) {
                     onResult(true, null)
                 } else {
                     onResult(false, "Usuario no encontrado")
+                    
                 }
             } else {
                 onResult(false, "Error en la autenticación")
