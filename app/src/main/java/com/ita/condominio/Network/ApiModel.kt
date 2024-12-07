@@ -7,8 +7,9 @@ data class UserResponse(
     val apellido_mat: String,
     val num_casa: Int,
     val correo: String,
-    val tel_casa: Long,
-    val cel: Long
+    val password: String,
+    val tel_casa: String,
+    val cel: String
 )
 
 data class LoginRequest(

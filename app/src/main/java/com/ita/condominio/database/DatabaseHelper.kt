@@ -21,8 +21,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
                 num_casa INTEGER NOT NULL,
                 correo TEXT NOT NULL UNIQUE,
                 password TEXT NOT NULL,
-                tel_casa INTEGER NOT NULL,
-                cel INTEGER NOT NULL
+                tel_casa TEXT NOT NULL,
+                cel TEXT NOT NULL
             );
             """
         )
@@ -66,7 +66,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         )
 
         // Insertar datos iniciales
-        //insertInitialData(db)
+        insertInitialData(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
@@ -141,6 +141,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         }
         cursor.close()
     }
+
 
     companion object {
         private const val DATABASE_NAME = "reservaServicios.db"
