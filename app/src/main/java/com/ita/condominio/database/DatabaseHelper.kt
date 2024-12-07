@@ -14,7 +14,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.execSQL(
             """
             CREATE TABLE Usuario (
-                id_usuario INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_usuario INTEGER PRIMARY KEY,
                 nombre TEXT NOT NULL,
                 apellido_pat TEXT NOT NULL,
                 apellido_mat TEXT NOT NULL,

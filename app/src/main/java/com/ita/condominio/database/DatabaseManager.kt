@@ -44,7 +44,7 @@ class DatabaseManager(private val context: Context) {
                     closeDatabase()
 
                     // Si el usuario existe, inserta los datos en la base de datos local
-                    insertarUsuario(userResponse.nombre, userResponse.apellido_pat, userResponse.apellido_mat, userResponse.num_casa, userResponse.correo, userResponse.password, userResponse.tel_casa, userResponse.cel)
+                    insertarUsuario(userResponse.id_usuario, userResponse.nombre, userResponse.apellido_pat, userResponse.apellido_mat, userResponse.num_casa, userResponse.correo, userResponse.password, userResponse.tel_casa, userResponse.cel)
                     onResult(true, null)
                 } else {
                     onResult(false, "Usuario no encontrado")
@@ -59,6 +59,7 @@ class DatabaseManager(private val context: Context) {
     }
 
     fun insertarUsuario(
+        id_usuario: Int,
         nombre: String,
         apellidoPat: String,
         apellidoMat: String,
@@ -72,11 +73,11 @@ class DatabaseManager(private val context: Context) {
         try {
             // Sentencia SQL para insertar un usuario
             val insertQuery = """
-            INSERT INTO Usuario (nombre, apellido_pat, apellido_mat, num_casa, correo, password, tel_casa, cel)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO Usuario (id_usuario, nombre, apellido_pat, apellido_mat, num_casa, correo, password, tel_casa, cel)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
             // Ejecutar la inserción con valores
-            database.execSQL(insertQuery, arrayOf(nombre, apellidoPat, apellidoMat, numCasa, correo, password, telCasa, cel))
+            database.execSQL(insertQuery, arrayOf(id_usuario, nombre, apellidoPat, apellidoMat, numCasa, correo, password, telCasa, cel))
             Log.e("DatabaseManager", "Usuario insertado con éxito")
         } catch (e: Exception) {
             Log.e("DatabaseManager", "Error al insertar usuario: ${e.message}")
