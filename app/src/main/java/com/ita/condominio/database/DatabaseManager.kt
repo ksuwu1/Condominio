@@ -10,6 +10,7 @@ import com.ita.condominio.Network.RetrofitInstance
 import com.ita.condominio.Network.UserResponse
 import kotlinx.coroutines.launch
 import android.content.ContentValues
+import com.ita.condominio.Models.ModelMorosos
 
 class DatabaseManager(private val context: Context) {
 
@@ -85,6 +86,34 @@ class DatabaseManager(private val context: Context) {
             closeDatabase() // Método que cierra la base de datos
         }
     }
+
+    fun insertarMorosos(morosos: List<ModelMorosos>) {
+        openDatabase() // Abre la base de datos solo una vez
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Morosos (id_moroso, casa, descripcion, detalle, cantidad)
+            VALUES (?, ?, ?, ?, ?)
+        """
+
+            database.beginTransaction() // Inicia la transacción
+            morosos.forEach { moroso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(moroso.id_moroso, moroso.casa, moroso.descripcion, moroso.detalleDescripcion, moroso.cantidad)
+                )
+            }
+            database.setTransactionSuccessful() // Marca la transacción como exitosa
+            Log.e("DatabaseManager", "Morosos insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar morosos: ${e.message}")
+        } finally {
+            database.endTransaction() // Finaliza la transacción
+            closeDatabase() // Cierra la base de datos solo una vez
+        }
+    }
+
+
+
 
 
 

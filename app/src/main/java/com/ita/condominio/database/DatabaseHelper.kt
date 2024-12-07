@@ -29,25 +29,15 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
 
         db.execSQL(
             """
-            CREATE TABLE Servicio (
-                id_servicio INTEGER PRIMARY KEY AUTOINCREMENT,
-                nombre_servicio TEXT NOT NULL,
-                precio REAL NOT NULL
-            );
-            """
-        )
-
-        db.execSQL(
-            """
             CREATE TABLE Reservacion (
-                id_reservacion INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_reservacion INTEGER NOT NULL,
+                id_usuario INTEGER NOT NULL,
                 horainicio TEXT NOT NULL,
                 horacierre TEXT NOT NULL,
                 cant_visit INTEGER NOT NULL,
-                id_servicio INTEGER NOT NULL,
+                servicios TEXT NOT NULL,  
                 fecha TEXT NOT NULL,
-                id_usuario INTEGER NOT NULL,
-                FOREIGN KEY(id_servicio) REFERENCES Servicio(id_servicio),
+                PRIMARY KEY(id_reservacion, id_usuario),  
                 FOREIGN KEY(id_usuario) REFERENCES Usuario(id_usuario)
             );
             """
@@ -56,11 +46,99 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         db.execSQL(
             """
             CREATE TABLE Visitantes (
-                id_visitante INTEGER PRIMARY KEY AUTOINCREMENT,
+                id_visitante INTEGER NOT NULL,
+                id_usuario INTEGER NOT NULL,
                 num_visit INTEGER NOT NULL,
                 fecha_visit TEXT NOT NULL,
-                id_usuario INTEGER NOT NULL,
+                PRIMARY KEY(id_visitante, id_usuario),
                 FOREIGN KEY(id_usuario) REFERENCES Usuario(id_usuario)
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Reporte (
+                id_reporte INTEGER NOT NULL,
+                casa INTEGER NOT NULL,
+                mensaje TEXT NOT NULL,
+                id_usuario INTEGER NOT NULL,
+                PRIMARY KEY(id_reporte, id_usuario),
+                FOREIGN KEY(id_usuario) REFERENCES Usuario(id_usuario)
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Pagos (
+                id_pago INTEGER NOT NULL,
+                descripcion_pago TEXT NOT NULL,
+                metodo_pago TEXT NOT NULL,
+                id_reservacion INTEGER NOT NULL,
+                PRIMARY KEY(id_pago, id_reservacion),
+                FOREIGN KEY(id_reservacion) REFERENCES Reservacion(id_reservacion)
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Aviso (
+                id_aviso INTEGER NOT NULL PRIMARY KEY,
+                tipo_aviso TEXT NOT NULL,
+                titulo TEXT NOT NULL,
+                fecha TEXT NOT NULL,
+                descripcion TEXT NOT NULL
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Morosos (
+                id_moroso INTEGER NOT NULL PRIMARY KEY,
+                casa INTEGER NOT NULL,
+                descripcion TEXT NOT NULL,
+                detalle TEXT NOT NULL,
+                cantidad INTEGER NOT NULL
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Ingre_Reserva (
+                R_folio INTEGER NOT NULL PRIMARY KEY,
+                casa INTEGER NOT NULL,
+                descripcion TEXT NOT NULL,
+                fecha TEXT NOT NULL,
+                cantidad INTEGER NOT NULL,
+                transferencia BOOLEAN NOT NULL
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Egreso (
+                E_folio INTEGER NOT NULL PRIMARY KEY,
+                descripcion TEXT NOT NULL,
+                fecha TEXT NOT NULL,
+                cantidad INTEGER NOT NULL
+            );
+            """
+        )
+
+        db.execSQL(
+            """
+            CREATE TABLE Mantenimiento (
+                M_folio INTEGER NOT NULL PRIMARY KEY,
+                casa INTEGER NOT NULL,
+                nombre TEXT NOT NULL,
+                mes TEXT NOT NULL,
+                cantidad INTEGER NOT NULL,
+                transferencia BOOLEAN NOT NULL
             );
             """
         )
@@ -117,6 +195,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         }, "perlosa@hotmail.com")
     }
 
+    // Método para insertar un usuario si no existe
     private fun insertUserIfNotExists(db: SQLiteDatabase, user: ContentValues, email: String) {
         val cursor = db.query(
             "Usuario",
@@ -126,25 +205,21 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
             null, null, null
         )
 
-        if (cursor.count == 0) {
+        if (cursor.moveToFirst()) {
+            android.util.Log.w("DatabaseHelper", "Usuario ya existe con correo: $email")
+        } else {
             val result = db.insert("Usuario", null, user)
             if (result == -1L) {
-                // Log de error si no se pudo insertar
                 android.util.Log.e("DatabaseHelper", "Error al insertar usuario con correo: $email")
             } else {
-                // Log de éxito
                 android.util.Log.i("DatabaseHelper", "Usuario insertado con correo: $email")
             }
-        } else {
-            // Log de usuario existente
-            android.util.Log.w("DatabaseHelper", "Usuario ya existe con correo: $email")
         }
         cursor.close()
     }
 
-
     companion object {
         private const val DATABASE_NAME = "reservaServicios.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 4  // Actualizar la versión de la base de datos
     }
 }

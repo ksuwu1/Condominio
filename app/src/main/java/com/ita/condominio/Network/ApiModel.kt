@@ -12,6 +12,15 @@ data class UserResponse(
     val cel: String
 )
 
+data class Moroso(
+    val id_moroso: Int,
+    val casa: Int,
+    val descripcion_fecha: String,
+    val detalle: String,
+    val cantidad: Int
+)
+
+
 data class LoginRequest(
     val correo: String,
     val password: String
