@@ -76,7 +76,7 @@ class DatabaseManager(private val context: Context) {
         telCasa: String,
         cel: String
     ) {
-        openDatabase() // Método que abre la base de datos
+        openDatabase() // Método que abre la base de datos --
         try {
             // Sentencia SQL para insertar un usuario
             val insertQuery = """
