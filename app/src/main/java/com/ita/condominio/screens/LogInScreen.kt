@@ -146,15 +146,22 @@ fun LogInScreen(navController: NavController, activity: AppCompatActivity) {
 
         Button(
             onClick = {
-
-                scope.launch {
-                    databaseManager.isValidUser(email, password) { isValid, errorMessage ->
-                        if (isValid) {
-                            // Si es válido, navega
-                            navController.navigate("MainMenu")
-                        } else {
-                            // Si hay error, muestra el mensaje
-                            loginError = errorMessage
+                if (useBiometrics) {
+                    // Mostrar autenticación biométrica
+                    promptManager.showBiometricPrompt(
+                        title = "Autenticación requerida",
+                        description = "Por favor, autentícate para continuar"
+                    )
+                } else {
+                    scope.launch {
+                        databaseManager.isValidUser(email, password) { isValid, errorMessage ->
+                            if (isValid) {
+                                // Si es válido, navega
+                                navController.navigate("MainMenu")
+                            } else {
+                                // Si hay error, muestra el mensaje
+                                loginError = errorMessage
+                            }
                         }
                     }
                 }

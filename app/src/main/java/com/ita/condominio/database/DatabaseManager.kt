@@ -30,13 +30,22 @@ class DatabaseManager(private val context: Context) {
     }
 
     // Verifica si hay usuarios en la tabla "Usuario"
-    fun verificarUsuarios() {
+    suspend fun verificarUsers(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         openDatabase()
         val cursor = database.rawQuery("SELECT * FROM Usuario", null)
         if (cursor.count > 0) {
-            Log.d("DatabaseManager", "Usuarios encontrados: ${cursor.count}")
+            database.delete("Usuario", null, null) // Elimina todos los registros de la tabla Usuario
+            Log.e("DatabaseManager", "Todos los registros de la tabla Usuario han sido eliminados.")
+            isValidUser(email, password) { isValid, errorMessage ->
+                if (isValid) {
+                    // Si es válido, navega
+                    onResult(true, null)
+                } else {
+                    onResult(false, null)
+                }
+            }
         } else {
-            Log.d("DatabaseManager", "No se encontraron usuarios")
+            Log.d("DatabaseManager", "No se encontraron usuarios.")
         }
         cursor.close()
         closeDatabase()
@@ -52,6 +61,10 @@ class DatabaseManager(private val context: Context) {
             if (response.isSuccessful) {
                 val userResponse = response.body()
                 if (userResponse != null) {
+                    openDatabase()
+                    database.delete("Usuario", null, null)
+                    closeDatabase()
+
                     // Si el usuario existe, inserta los datos en la base de datos local
                     insertarUsuario(userResponse.nombre, userResponse.apellido_pat, userResponse.apellido_mat, userResponse.num_casa, userResponse.correo, userResponse.password, userResponse.tel_casa, userResponse.cel)
                     onResult(true, null)
