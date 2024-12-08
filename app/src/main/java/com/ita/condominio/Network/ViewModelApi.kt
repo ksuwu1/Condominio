@@ -34,11 +34,11 @@ class MorosoViewModel(application: Application) : AndroidViewModel(application) 
                         ModelMorosos(
                             id_moroso = it.id_moroso,
                             casa = it.casa,
-                            descripcion = it.descripcion_fecha,
-                            detalleDescripcion = it.detalle,
+                            descripcion = it.descripcion_fecha ?: "Sin descripción", // ✅ Control de nulos
+                            detalleDescripcion = it.detalle ?: "Sin detalles", // ✅ Evitar problemas similares
                             cantidad = it.cantidad
                         )
-                    } ?: emptyList()
+                    }?:emptyList()
 
                     // Actualizar la lista de morosos observada en la UI
                     _morosos.value = morosos

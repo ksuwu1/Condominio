@@ -4,6 +4,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("users/login")
@@ -18,5 +19,7 @@ interface ApiService {
     @GET("avisos") // El endpoint de la API
     suspend fun getAvisos(): Response<List<ModelAvisos>>
 
+    @GET("users")
+    suspend fun getUserByEmail(@Query("correo") correo: String): Response<UserResponse>
 
 }
