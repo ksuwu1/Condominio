@@ -15,4 +15,8 @@ interface ApiService {
     @GET("morosos")
     suspend fun getMorosos(): Response<List<Moroso>>
 
+    @GET("avisos") // El endpoint de la API
+    suspend fun getAvisos(): Response<List<ModelAvisos>>
+
+
 }

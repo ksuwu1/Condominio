@@ -20,6 +20,14 @@ data class Moroso(
     val cantidad: Int
 )
 
+data class ModelAvisos(
+    val id_aviso: Int,
+    val tipo_aviso: String,
+    val titulo: String,
+    val fecha: String,
+    val descripcion: String
+)
+
 
 data class LoginRequest(
     val correo: String,

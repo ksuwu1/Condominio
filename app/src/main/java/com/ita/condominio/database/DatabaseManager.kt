@@ -11,6 +11,8 @@ import com.ita.condominio.Network.UserResponse
 import kotlinx.coroutines.launch
 import android.content.ContentValues
 import com.ita.condominio.Models.ModelMorosos
+import com.ita.condominio.Network.ModelAvisos
+import com.ita.condominio.Network.Moroso
 
 class DatabaseManager(private val context: Context) {
 
@@ -112,9 +114,30 @@ class DatabaseManager(private val context: Context) {
         }
     }
 
+    fun insertarAvisos(a: List<ModelAvisos>) {
+        openDatabase() // Abre la base de datos solo una vez
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Aviso (id_aviso, tipo_aviso, titulo, fecha, descripcion)
+            VALUES (?, ?, ?, ?, ?)
+        """
 
-
-
+            database.beginTransaction() // Inicia la transacción
+            a.forEach { avisos -> // Itera sobre los avisos
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(avisos.id_aviso, avisos.tipo_aviso, avisos.titulo, avisos.fecha, avisos.descripcion)
+                )
+            }
+            database.setTransactionSuccessful() // Marca la transacción como exitosa
+            Log.e("DatabaseManager", "Avisos insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar avisos: ${e.message}")
+        } finally {
+            database.endTransaction() // Finaliza la transacción
+            closeDatabase() // Cierra la base de datos solo una vez
+        }
+    }
 
 
 }
