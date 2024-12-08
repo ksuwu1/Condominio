@@ -3,16 +3,14 @@ package com.ita.condominio.database
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import com.ita.condominio.Network.LoginRequest
 import com.ita.condominio.Network.RetrofitInstance
-import com.ita.condominio.Network.UserResponse
-import kotlinx.coroutines.launch
-import android.content.ContentValues
 import com.ita.condominio.Models.ModelMorosos
+import com.ita.condominio.Network.Expense
+import com.ita.condominio.Network.MaintenanceIncome
 import com.ita.condominio.Network.ModelAvisos
 import com.ita.condominio.Network.Moroso
+import com.ita.condominio.Network.ReservationIncome
 
 class DatabaseManager(private val context: Context) {
 
@@ -139,5 +137,76 @@ class DatabaseManager(private val context: Context) {
         }
     }
 
+    fun insertarMantenimientoIngresos(ingresos: List<MaintenanceIncome>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Mantenimiento (M_folio, casa, nombre, mes, cantidad, transferencia)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            ingresos.forEach { ingreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(ingreso.M_folio, ingreso.casa, ingreso.nombre, ingreso.mes, ingreso.cantidad, if (ingreso.transferencia) 1 else 0)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Ingresos de mantenimiento insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar ingresos de mantenimiento: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
+
+    fun insertarReservaIngresos(ingresos: List<ReservationIncome>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Ingre_Reserva (R_folio, casa, descripcion, fecha, cantidad, transferencia)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            ingresos.forEach { ingreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(ingreso.R_folio, ingreso.casa, ingreso.descripcion, ingreso.fecha, ingreso.cantidad, if (ingreso.transferencia) 1 else 0)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Ingresos de reserva insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar ingresos de reserva: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
+
+    fun insertarEgresos(egresos: List<Expense>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Egreso (E_folio, descripcion, fecha, cantidad)
+            VALUES (?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            egresos.forEach { egreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(egreso.E_folio, egreso.descripcion, egreso.fecha, egreso.cantidad)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Egresos insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar egresos: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
 
 }

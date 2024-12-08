@@ -28,6 +28,31 @@ data class ModelAvisos(
     val descripcion: String
 )
 
+data class MaintenanceIncome(
+    val M_folio: Int,
+    val casa: Int,
+    val nombre: String,
+    val mes: String,
+    val cantidad: Int,
+    val transferencia: Boolean
+)
+
+data class ReservationIncome(
+    val R_folio: Int,
+    val casa: Int,
+    val descripcion: String,
+    val fecha: String,
+    val cantidad: Int,
+    val transferencia: Boolean
+)
+
+data class Expense(
+    val E_folio: Int,
+    val descripcion: String,
+    val fecha: String,
+    val cantidad: Int
+)
+
 
 data class LoginRequest(
     val correo: String,

@@ -118,7 +118,7 @@ fun MorosoCard(casa: String, descripcion: String, detalleDescripcion: String, ca
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = casa,
+                    text = "Casa: " + casa,
                     fontSize = 20.sp,
                     color = Color.Black
                 )

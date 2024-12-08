@@ -21,5 +21,13 @@ interface ApiService {
 
     @GET("users")
     suspend fun getUserByEmail(@Query("correo") correo: String): Response<UserResponse>
+    @GET("/egreso")
+    suspend fun getExpenses(): List<Expense>
+
+    @GET("/ingreso/mantenimiento")
+    suspend fun getMaintenanceIncomes(): List<MaintenanceIncome>
+
+    @GET("/ingreso/reserva")
+    suspend fun getReservationIncomes(): List<ReservationIncome>
 
 }
