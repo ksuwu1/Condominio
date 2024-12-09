@@ -30,6 +30,7 @@ import com.ita.condominio.R
 import com.ita.condominio.biometrics.BiometricPromptManager
 import com.ita.condominio.database.DatabaseManager
 import androidx.compose.material.ButtonDefaults
+import kotlinx.coroutines.launch
 
 @Composable
 fun LogInScreen(navController: NavController, activity: AppCompatActivity) {
@@ -43,6 +44,7 @@ fun LogInScreen(navController: NavController, activity: AppCompatActivity) {
     val databaseManager = DatabaseManager(context)
     val promptManager by lazy { BiometricPromptManager(activity) }
     val biometricResult by promptManager.promptResults.collectAsState(initial = null)
+    val scope = rememberCoroutineScope()
 
     // Definición del launcher para iniciar la configuración de biometría
     val enrollLauncher = rememberLauncherForActivityResult(
@@ -144,17 +146,24 @@ fun LogInScreen(navController: NavController, activity: AppCompatActivity) {
 
         Button(
             onClick = {
-                if (databaseManager.isValidUser(email, password)) {
-                    if (useBiometrics) {
-                        promptManager.showBiometricPrompt(
-                            title = "Autenticación requerida",
-                            description = "Por favor, autentícate para continuar"
-                        )
-                    } else {
-                        navController.navigate("MainMenu")
-                    }
+                if (useBiometrics) {
+                    // Mostrar autenticación biométrica
+                    promptManager.showBiometricPrompt(
+                        title = "Autenticación requerida",
+                        description = "Por favor, autentícate para continuar"
+                    )
                 } else {
-                    loginError = "Correo o contraseña incorrectos"
+                    scope.launch {
+                        databaseManager.isValidUser(email, password) { isValid, errorMessage ->
+                            if (isValid) {
+                                // Si es válido, navega
+                                navController.navigate("MainMenu")
+                            } else {
+                                // Si hay error, muestra el mensaje
+                                loginError = errorMessage
+                            }
+                        }
+                    }
                 }
             },
             modifier = Modifier.fillMaxWidth(),

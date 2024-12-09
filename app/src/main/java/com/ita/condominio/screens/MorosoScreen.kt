@@ -1,13 +1,13 @@
 package com.ita.condominio.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.* // Cambiamos imports
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -15,49 +15,52 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.ita.condominio.Models.ModelMorosos // Importamos el modelo
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.livedata.observeAsState
+import com.ita.condominio.database.DatabaseManager
+import com.ita.condominio.viewmodels.MorosoViewModel
 
 @Composable
-fun MorosoScreen(navController: NavHostController) {
+fun MorosoScreen(navController: NavHostController, viewModel: MorosoViewModel = viewModel()) {
+    val morosos by viewModel.morosos.observeAsState(emptyList())
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val error by viewModel.error.observeAsState()
+
     Column(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
-        // TopBar siempre al inicio, ocupa todo el ancho
         TopBar(navController)
 
-        // Contenido desplazado hacia abajo para no tapar el TopBar
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp, vertical = 8.dp), // Ajuste de padding
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            // Lista de morosos utilizando el modelo
-            val morosos = listOf(
-                ModelMorosos("Casa 1", "Enero 2023, Febrero 2023", "Mantenimiento", 150),
-                ModelMorosos("Casa 2", "Marzo 2023", "Reparaciones", 100),
-                ModelMorosos("Casa 3", "Abril 2023, Mayo 2023", "Servicios", 200),
-                ModelMorosos("Casa 4", "Junio 2023", "Mantenimiento", 250),
-                ModelMorosos("Casa 5", "Julio 2023, Agosto 2023", "Luz", 300),
-                ModelMorosos("Casa 6", "Septiembre 2023", "Mantenimiento", 400),
-                ModelMorosos("Casa 7", "Octubre 2023", "Reparaciones", 350),
-                ModelMorosos("Casa 8", "Noviembre 2023", "Servicios", 220),
-                ModelMorosos("Casa 9", "Diciembre 2023", "Mantenimiento", 280),
-                ModelMorosos("Casa 10", "Enero 2024", "Otros Adeudos", 450)
-            )
+        LaunchedEffect(key1 = true) {
+            viewModel.fetchMorosos()
+        }
 
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(morosos) { moroso ->
-                    MorosoCard(
-                        casa = moroso.casa,
-                        descripcion = moroso.descripcion,
-                        detalleDescripcion = moroso.detalleDescripcion,
-                        cantidad = moroso.cantidad
-                    )
+        when {
+            isLoading -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
+            }
+            error != null -> {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(text = error ?: "Error desconocido", color = Color.Red)
+                }
+            }
+            else -> {
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                ) {
+                    items(morosos) { moroso ->
+                        MorosoCard( //
+                            casa = moroso.casa.toString(),
+                            descripcion = moroso.descripcion,
+                            detalleDescripcion = moroso.detalleDescripcion,
+                            cantidad = moroso.cantidad
+                        )
+                    }
                 }
             }
         }
@@ -115,7 +118,7 @@ fun MorosoCard(casa: String, descripcion: String, detalleDescripcion: String, ca
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = casa,
+                    text = "Casa: " + casa,
                     fontSize = 20.sp,
                     color = Color.Black
                 )
