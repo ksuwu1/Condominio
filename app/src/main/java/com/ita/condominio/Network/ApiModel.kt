@@ -12,6 +12,11 @@ data class UserResponse(
     val cel: String
 )
 
+data class ChangePasswordRequest(
+    val currentPassword: String,
+    val newPassword: String
+)
+
 data class Moroso(
     val id_moroso: Int,
     val casa: Int,

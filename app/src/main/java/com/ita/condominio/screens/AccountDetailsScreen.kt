@@ -1,3 +1,4 @@
+
 import android.app.Application
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -19,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.NavHostController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader2
-
 import com.ita.condominio.R
 import androidx.compose.material.Snackbar
 import androidx.compose.runtime.livedata.observeAsState
@@ -31,25 +31,42 @@ fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDet
         val usuario by viewModel.usuario.observeAsState()
 
         // Usar valores directamente desde el usuario
-        val vnombre = usuario?.nombre ?: "Cargando..."
-        val vapellidoPat = usuario?.apellido_pat ?: "Cargando..."
-        val vapellidoMat = usuario?.apellido_mat ?: "Cargando..."
-        val vtelCasa = usuario?.tel_casa ?: "Cargando..."
-        val vcel = usuario?.cel ?: "Cargando..."
-        val vcorreo = usuario?.correo ?: "Cargando..."
+    val id_user = usuario?.id_usuario ?: "Cargando..."
+    val password = usuario?.password ?: "Cargando..."
+
+    // Inicializa los valores solo si el usuario está disponible
+    val nombre = usuario?.nombre ?: "Cargando..."
+    val apellidoPat = usuario?.apellido_pat ?: "Cargando..."
+    val apellidoMat = usuario?.apellido_mat ?: "Cargando..."
+    val telCasa = usuario?.tel_casa ?: "Cargando..."
+    val celular = usuario?.cel ?: "Cargando..."
+    val correo = usuario?.correo ?: "Cargando..."
+    val casa = usuario?.num_casa ?: "Cargando..."
+
+    // Usa el estado mutable solo después de obtener los datos reales
+    var nombreState by remember { mutableStateOf(nombre) }
+    var apellidoPatState by remember { mutableStateOf(apellidoPat) }
+    var apellidoMatState by remember { mutableStateOf(apellidoMat) }
+    var telCasaState by remember { mutableStateOf(telCasa) }
+    var celularState by remember { mutableStateOf(celular) }
+    var correoState by remember { mutableStateOf(correo) }
+
 
         // Estado para indicar si los campos son editables o solo de lectura
-        var isEditing by remember { mutableStateOf(false) }
+    var isEditing by remember { mutableStateOf(false) }
 
-        // Mostrar una Snackbar si hay un error
-    /*error?.let {
-        Snackbar(
-            modifier = Modifier.padding(8.dp),
-            content = {
-                Text(text = it, color = Color.White)
-            }
-        )
-    }*/
+    LaunchedEffect(usuario) {
+        // Verifica que 'usuario' no sea null
+        if (usuario != null) {
+            nombreState = usuario?.nombre ?: nombreState
+            apellidoPatState = usuario?.apellido_pat ?: apellidoPatState
+            apellidoMatState = usuario?.apellido_mat ?: apellidoMatState
+            telCasaState = usuario?.tel_casa ?: telCasaState
+            celularState = usuario?.cel ?: celularState
+            correoState = usuario?.correo ?: correoState
+        }
+    }
+
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Encabezado de la pantalla
@@ -78,7 +95,7 @@ fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDet
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(8.dp)) // Espacio entre icono y texto
-                    Text(text = "Número de casa: 10", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+                    Text(text = "Número de casa: " + casa, fontSize = 18.sp, fontWeight = FontWeight.Bold)
                 }
             }
 
@@ -91,12 +108,12 @@ fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDet
                 )
             }
 
-            item { EditableField("Nombre", vnombre, isEditing) { /* acción al editar */ } }
-            item { EditableField("Apellido paterno", vapellidoPat, isEditing) { /* acción al editar */ } }
-            item { EditableField("Apellido materno", vapellidoMat, isEditing) { /* acción al editar */ } }
-            item { EditableField("Teléfono casa", vtelCasa, isEditing) { /* acción al editar */ } }
-            item { EditableField("Celular", vcel, isEditing) { /* acción al editar */ } }
-            item { EditableField("Correo", vcorreo, isEditing) { /* acción al editar */ } }
+            item { EditableField("Nombre", nombreState, isEditing) { nombreState = it } }
+            item { EditableField("Apellido paterno", apellidoPatState, isEditing) { apellidoPatState = it } }
+            item { EditableField("Apellido materno", apellidoMatState, isEditing) { apellidoMatState = it } }
+            item { EditableField("Teléfono casa", telCasaState, isEditing) { telCasaState = it } }
+            item { EditableField("Celular", celularState, isEditing) { celularState = it } }
+            item { EditableField("Correo", correoState, isEditing) { correoState = it } }
 
             // Botones para modificar datos y cambiar contraseña
             item {
@@ -117,7 +134,19 @@ fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDet
                         )
                         Button(
                             onClick = {
-                                isEditing = !isEditing
+                                if (isEditing) {
+                                    viewModel.guardarCambios(
+                                        nombre = nombreState,
+                                        apellidoPat = apellidoPatState,
+                                        apellidoMat = apellidoMatState,
+                                        telCasa = telCasaState,
+                                        celular = celularState,
+                                        correo = correoState
+                                    ) // Llamamos a guardar cambios
+                                    isEditing = false // Cambiamos a solo lectura
+                                } else {
+                                    isEditing = true // Cambiamos a modo de edición
+                                }
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4DAD2))
                         ) {
@@ -158,18 +187,20 @@ fun EditableField(label: String, value: String, isEditable: Boolean, onValueChan
         if (isEditable) {
             BasicTextField(
                 value = value,
-                onValueChange = onValueChange,
+                onValueChange = { newValue -> onValueChange(newValue) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.White)
+                    .background(Color.LightGray)
                     .padding(8.dp)
             )
+
+            //Actualizar datos
         } else {
             Text(
                 text = value,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color.LightGray)
+                    .background(Color.Gray)
                     .padding(8.dp)
             )
         }

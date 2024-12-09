@@ -3,7 +3,9 @@ package com.ita.condominio.Network
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface ApiService {
@@ -31,4 +33,9 @@ interface ApiService {
     @GET("/ingreso/reserva")
     suspend fun getReservationIncomes(): List<ReservationIncome>
 
+    @PATCH("users/{id}/password")
+    suspend fun changePassword(
+        @Path("id") userId: Int,
+        @Body passwordRequest: ChangePasswordRequest
+    ): Response<Void>
 }

@@ -1,5 +1,6 @@
 package com.ita.condominio.database
 
+import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -253,12 +254,55 @@ class DatabaseManager(private val context: Context) {
         }
     }
 
-
     fun getColumnIndexSafe(cursor: Cursor, columnName: String): String? {
         val index = cursor.getColumnIndex(columnName)
         return if (index >= 0) cursor.getString(index) else null
     }
 
+    fun actualizarUsuario(usuario: UserResponse): Boolean {
+        Log.e("AccountDetailsViewModel", "ENTRO A ACTUALIZAR" + usuario.cel)
+
+        val db = dbHelper.writableDatabase
+        val celular = usuario.cel
+
+        try {
+            // Inicia la transacción
+            db.beginTransaction()
+
+            val updateQuery = """
+            INSERT OR REPLACE INTO Usuario (id_usuario, nombre, apellido_pat, apellido_mat, num_casa, correo, password, tel_casa, cel)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+            // Ejecuta el update o insert
+            db.execSQL(
+                updateQuery,
+                arrayOf(usuario.id_usuario, usuario.nombre, usuario.apellido_pat, usuario.apellido_mat, usuario.num_casa, usuario.correo, usuario.password, usuario.tel_casa, usuario.cel)
+            )
+
+            // Marca la transacción como exitosa
+            db.setTransactionSuccessful()
+
+            val query = "SELECT * FROM Usuario WHERE id_usuario = ?"
+            val cursor = db.rawQuery(query, arrayOf(usuario.id_usuario.toString()))
+
+            if (cursor.moveToFirst()) {
+                val cel = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
+                Log.e("DatabaseManager", "Celular actualizado: $cel")
+            } else {
+                Log.e("DatabaseManager", "No se encontró el usuario con id_usuario: ${usuario.id_usuario}")
+            }
+
+            return true
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al actualizar o insertar usuario: ${e.message} ${celular}" )
+            return false
+        } finally {
+            // Finaliza la transacción y cierra la base de datos
+            db.endTransaction()
+            closeDatabase()
+        }
+    }
 
 
 }
