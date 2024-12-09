@@ -43,19 +43,19 @@ data class UserRequest(
     val correo: String
 )
 
-data class Reservation(
-    val horainicio: String,
-    val horacierre: String,
-    val cantVisit: Int,
-    val servicios: MutableList<String>, // Asegúrate de que sea una lista
-    val fecha: String,
-    val idUsuario: Int
+data class Reservacion(
+    val id_reservacion: Int,
+    val id_usuario: Int,
+    val hora_inicio: String,
+    val hora_cierre: String,
+    val cant_visit: Int,
+    val servicios: String,
+    val fecha: String
 )
 
-
-
-data class ReservationResponse(
+data class ReservacionRespuesta(
     val success: Boolean,
     val message: String,
-    val reservation: Reservation? // Información de la reserva si fue exitosa
+    val reservacion: Reservacion? // Devuelve la reservación creada, si aplica
 )
+

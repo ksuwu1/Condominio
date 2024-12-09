@@ -1,5 +1,6 @@
 package com.ita.condominio.screens
 
+import com.ita.condominio.R
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import androidx.compose.foundation.background
@@ -8,45 +9,35 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccessTime
-import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.compose.material.icons.filled.AccessTime
+import androidx.compose.material.icons.filled.CalendarToday
 import com.ita.condominio.BottomNavigationBar
-import com.ita.condominio.CustomHeader2
-import com.ita.condominio.database.DatabaseHelper
-import com.ita.condominio.Network.Reservation
+import com.ita.condominio.CustomHeader
 import java.util.*
-// Retrofit
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.POST
-
-// Para el objeto ReservationResponse y la clase Reservation
-import com.ita.condominio.Network.ReservationResponse
-
-// Para mostrar el Dialog (si ya lo usas)
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-
-// Importaciones de clases generales de Compose
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import android.content.Intent
+import android.provider.CalendarContract
+import android.app.AlertDialog
+import com.ita.condominio.CustomHeader2
+import com.ita.condominio.Network.Reservacion
+import com.ita.condominio.Network.ReservacionRespuesta
 import com.ita.condominio.Network.RetrofitInstance
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import okhttp3.Response
+import org.chromium.base.Callback
+import retrofit2.Call
 
 @Composable
 fun ReservationScreen(navController: NavHostController) {
@@ -60,85 +51,144 @@ fun ReservationScreen(navController: NavHostController) {
     var salonChecked by remember { mutableStateOf(false) }
     var albercaChecked by remember { mutableStateOf(false) }
 
-    // Calcular el total de los servicios seleccionados
-    val total = (if (bañosChecked) 100 else 0) +
-            (if (palapaChecked) 500 else 0) +
-            (if (salonChecked) 1500 else 0) +
-            (if (albercaChecked) 1000 else 0)
+    // Precios de los espacios
+    val precioBaños = 100
+    val precioPalapa = 500
+    val precioSalon = 1500
+    val precioAlberca = 1000
 
+    // Calcular el total
+    val total = (if (bañosChecked) precioBaños else 0) +
+            (if (palapaChecked) precioPalapa else 0) +
+            (if (salonChecked) precioSalon else 0) +
+            (if (albercaChecked) precioAlberca else 0)
+
+    // Obtener el calendario actual
     val calendar = Calendar.getInstance()
 
-    // DatePicker y TimePickers
+    // Mostrar DatePicker para seleccionar la fecha
     val datePickerDialog = DatePickerDialog(
         navController.context,
         { _, year, month, dayOfMonth -> fecha = "$dayOfMonth/${month + 1}/$year" },
         calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH)
     )
+
+    // Mostrar TimePicker para seleccionar la hora de inicio
     val startTimePickerDialog = TimePickerDialog(
         navController.context,
         { _, hourOfDay, minute -> horaInicio = String.format("%02d:%02d", hourOfDay, minute) },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
+
+    // Mostrar TimePicker para seleccionar la hora de cierre
     val endTimePickerDialog = TimePickerDialog(
         navController.context,
         { _, hourOfDay, minute -> horaCierre = String.format("%02d:%02d", hourOfDay, minute) },
         calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE), true
     )
 
-    // Estado para mostrar el diálogo de confirmación
+    // Estado para controlar la visibilidad del diálogo
     var showDialog by remember { mutableStateOf(false) }
 
-    // Obtener el contexto para el DatabaseHelper
-    val context = navController.context
-    val dbHelper = DatabaseHelper(context)
+    // Función para agregar el evento al calendario
+    fun addEventToCalendar(context: android.content.Context) {
+        val intent = Intent(Intent.ACTION_INSERT).apply {
+            data = CalendarContract.Events.CONTENT_URI
+            putExtra(CalendarContract.Events.TITLE, "Reserva de Espacio")
+            putExtra(CalendarContract.Events.DESCRIPTION, "Visitantes: $visitantes")
 
-    // Método para agregar la reservación a la base de datos
-    fun insertReservacion() {
-        // Crear la lista de servicios seleccionados
-        val servicios = mutableListOf<String>()
-        if (bañosChecked) servicios.add("Baños")
-        if (palapaChecked) servicios.add("Palapa")
-        if (salonChecked) servicios.add("Salón")
-        if (albercaChecked) servicios.add("Alberca")
-
-        // Crear el objeto de la reservación
-        val reservation = Reservation(
-            horainicio = horaInicio,
-            horacierre = horaCierre,
-            cantVisit = visitantes.toInt(),
-            servicios = servicios,
-            fecha = fecha,
-            idUsuario = 1 // ID del usuario, necesitarás obtenerlo desde tu sesión o base de datos
-        )
-
-        // Usar Retrofit para hacer la solicitud al servidor
-        val apiService = RetrofitInstance.api
-        apiService.insertReservation(reservation).enqueue(object : Callback<ReservationResponse> {
-            override fun onResponse(call: Call<ReservationResponse>, response: Response<ReservationResponse>) {
-                if (response.isSuccessful) {
-                    // La reservación fue insertada exitosamente en el servidor
-                    // Opcional: Mostrar un mensaje de éxito
-                    showDialog = true // Mostrar el diálogo de confirmación
-                } else {
-                    // Error en la respuesta del servidor
-                    // Opcional: Mostrar mensaje de error
-                }
+            // Parsear fecha y hora
+            val parts = fecha.split("/")
+            val dateCalendar = Calendar.getInstance().apply {
+                set(Calendar.YEAR, parts[2].toInt())
+                set(Calendar.MONTH, parts[1].toInt() - 1)
+                set(Calendar.DAY_OF_MONTH, parts[0].toInt())
             }
+            val startHourParts = horaInicio.split(":")
+            val endHourParts = horaCierre.split(":")
 
-            override fun onFailure(call: Call<ReservationResponse>, t: Throwable) {
-                // Error al realizar la solicitud
-                // Opcional: Mostrar mensaje de error
-            }
-        })
+            val startCalendar = dateCalendar.clone() as Calendar
+            startCalendar.set(Calendar.HOUR_OF_DAY, startHourParts[0].toInt())
+            startCalendar.set(Calendar.MINUTE, startHourParts[1].toInt())
+
+            val endCalendar = dateCalendar.clone() as Calendar
+            endCalendar.set(Calendar.HOUR_OF_DAY, endHourParts[0].toInt())
+            endCalendar.set(Calendar.MINUTE, endHourParts[1].toInt())
+
+            putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startCalendar.timeInMillis)
+            putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endCalendar.timeInMillis)
+        }
+
+        context.startActivity(intent)
     }
 
-    // Layout principal
-    Column(modifier = Modifier.fillMaxSize()) {
+    // Función para obtener los servicios seleccionados
+    fun getServiciosSeleccionados(): String {
+        val serviciosSeleccionados = mutableListOf<String>()
+
+        if (bañosChecked) serviciosSeleccionados.add("Baños")
+        if (palapaChecked) serviciosSeleccionados.add("Palapa")
+        if (salonChecked) serviciosSeleccionados.add("Salón")
+        if (albercaChecked) serviciosSeleccionados.add("Alberca")
+
+        return serviciosSeleccionados.joinToString(", ")
+    }
+
+    // Función para realizar la reservación
+    suspend fun insertarReservaciones() {
+        // Crear la reservación con los datos actuales
+        val reservacion = Reservacion(
+            id_reservacion = 0, // El id puede ser autogenerado por la base de datos
+            id_usuario = 1, // Aquí debes obtener el ID del usuario que está haciendo la reserva
+            hora_inicio = horaInicio,
+            hora_cierre = horaCierre,
+            cant_visit = visitantes.toInt(),
+            servicios = getServiciosSeleccionados(),
+            fecha = fecha
+        )
+
+        try {
+            // Llamar a la API usando Retrofit
+            val respuesta = RetrofitInstance.api.insertarReservaciones(reservacion)
+
+            // Verifica si la respuesta es exitosa
+            if (respuesta.success) {
+                // Si la respuesta es exitosa, mostrar un mensaje
+                showDialog = true
+            } else {
+                // Si no es exitosa, manejar el error
+                showDialog = false
+            }
+        } catch (e: Exception) {
+            // En caso de error en la conexión o cualquier otro tipo de fallo
+            showDialog = false
+        }
+    }
+
+
+    Column(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        // Header personalizable
         CustomHeader2(navController = navController, title = "Reservaciones")
 
-        LazyColumn(modifier = Modifier.weight(1f).padding(16.dp)) {
+        // Contenido desplazable con LazyColumn
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f)
+                .padding(16.dp)
+        ) {
             item {
-                // Campo para la fecha
+                // Datos generales
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(text = "Datos generales", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+                Text(text = "Folio: 494993", fontSize = 16.sp, modifier = Modifier.fillMaxWidth().padding(start = 16.dp))
+
+                // Espacio entre datos generales y espacios a reservar
+                Spacer(modifier = Modifier.height(5.dp))
+
+                // Campo para seleccionar fecha
                 OutlinedTextField(
                     value = fecha,
                     onValueChange = { fecha = it },
@@ -152,7 +202,7 @@ fun ReservationScreen(navController: NavHostController) {
                     }
                 )
 
-                // Campo para la hora de inicio
+                // Campo para seleccionar hora de inicio
                 OutlinedTextField(
                     value = horaInicio,
                     onValueChange = { horaInicio = it },
@@ -166,7 +216,7 @@ fun ReservationScreen(navController: NavHostController) {
                     }
                 )
 
-                // Campo para la hora de cierre
+                // Campo para seleccionar hora de cierre
                 OutlinedTextField(
                     value = horaCierre,
                     onValueChange = { horaCierre = it },
@@ -180,78 +230,78 @@ fun ReservationScreen(navController: NavHostController) {
                     }
                 )
 
-                // Checkboxes para los servicios
+                // Espacio entre datos generales y espacios a reservar
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Espacios a reservar
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(text = "Espacio a reservar", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+
+                // Checkboxes para los espacios
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = bañosChecked, onCheckedChange = { bañosChecked = it })
-                    Text(text = "Baños (100)")
+                    Text(text = "Baños ($precioBaños)", fontSize = 16.sp)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = palapaChecked, onCheckedChange = { palapaChecked = it })
-                    Text(text = "Palapa (500)")
+                    Text(text = "Palapa ($precioPalapa)", fontSize = 16.sp)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = salonChecked, onCheckedChange = { salonChecked = it })
-                    Text(text = "Salón (1500)")
+                    Text(text = "Salón ($precioSalon)", fontSize = 16.sp)
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = albercaChecked, onCheckedChange = { albercaChecked = it })
-                    Text(text = "Alberca (1000)")
+                    Text(text = "Alberca ($precioAlberca)", fontSize = 16.sp)
                 }
 
-                // Campo para la cantidad de visitantes
-                OutlinedTextField(
-                    value = visitantes,
-                    onValueChange = { visitantes = it },
-                    label = { Text("Visitantes") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
+                // Espacio entre los checkboxes y el total
+                Spacer(modifier = Modifier.height(16.dp))
 
-                // Botón para confirmar y agregar la reservación
+                // Mostrar el total
+                Text(text = "Total a pagar: $total", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            }
+
+            item {
+                // Botón para realizar la reservación
                 Button(
                     onClick = {
-                        insertReservacion()  // Llamar al método que inserta la reservación en la base de datos
-                        showDialog = true  // Mostrar diálogo de confirmación
+                        // Llamada dentro de una corrutina para ejecutar la función suspensiva
+                        CoroutineScope(Dispatchers.Main).launch {
+                            insertarReservaciones()
+                        }
                     },
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4D9D2))
+                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1C76FF))
                 ) {
-                    Text("Confirmar Reservación")
+                    Text(text = "Realizar Reservación")
                 }
 
-                // Confirmar si agregar la reservación al calendario
-                if (showDialog) {
-                    AlertDialog(
-                        onDismissRequest = { showDialog = false },
-                        title = { Text("Confirmar Reservación") },
-                        text = { Text("¿Deseas agregar esta reservación al calendario?") },
-                        confirmButton = {
-                            Button(
-                                onClick = {
-                                    // Lógica para agregar al calendario (si deseas integrarlo)
-                                    showDialog = false
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4D9D2))
-                            ) {
-                                Text("Sí")
-                            }
-                        },
-                        dismissButton = {
-                            Button(
-                                onClick = { showDialog = false },
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFC4D9D2))
-                            ) {
-                                Text("No")
-                            }
-                        }
-                    )
-                }
             }
         }
 
         // Barra de navegación inferior
         BottomNavigationBar(navController = navController)
     }
+
+    // Mostrar diálogo de confirmación o error
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Reservación exitosa") },
+            text = { Text("Tu reservación se ha realizado correctamente.") },
+            confirmButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Aceptar")
+                }
+            }
+        )
+    }
+}
+
+fun insertarReservaciones() {
+    TODO("Not yet implemented")
 }
 
 @Composable

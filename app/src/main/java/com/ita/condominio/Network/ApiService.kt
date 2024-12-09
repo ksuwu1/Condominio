@@ -19,8 +19,8 @@ interface ApiService {
     @GET("avisos") // El endpoint de la API
     suspend fun getAvisos(): Response<List<ModelAvisos>>
 
-    //Reservaciones
-    @POST("reservations")
-    fun insertReservation(@Body reservation: Reservation): Call<ReservationResponse>
+    @POST("reservaciones")
+    suspend fun insertarReservaciones(@Body reservacion: Reservacion): ReservacionRespuesta
+
 
 }

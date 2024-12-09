@@ -13,7 +13,7 @@ import android.content.ContentValues
 import com.ita.condominio.Models.ModelMorosos
 import com.ita.condominio.Network.ModelAvisos
 import com.ita.condominio.Network.Moroso
-import com.ita.condominio.Network.Reservation
+import com.ita.condominio.Network.Reservacion
 
 class DatabaseManager(private val context: Context) {
 
@@ -140,33 +140,36 @@ class DatabaseManager(private val context: Context) {
         }
     }
 
-// Método para insertar una nueva reserva usando un objeto Reservation
-    fun insertReservacion(reservation: Reservation) {
-        val db = openDatabase()  // Abrir la base de datos utilizando el método de DatabaseManager
-        val contentValues = ContentValues().apply {
-            put("horainicio", reservation.horainicio)
-            put("horacierre", reservation.horacierre)
-            put("cant_visit", reservation.cantVisit)
-            put("servicios", reservation.servicios.joinToString(","))  // Concatenación de servicios
-            put("fecha", reservation.fecha)
-            put("id_usuario", reservation.idUsuario)
-        }
-
-        // Usar transacciones para asegurar la integridad
-        db.beginTransaction()
+    fun insertarReservaciones(reservaciones: List<Reservacion>) {
+        openDatabase() // Abre la base de datos una vez
         try {
-            val result = db.insert("Reservacion", null, contentValues)
-            if (result == -1L) {
-                Log.e("DatabaseManager", "Error al insertar la reservación")
-            } else {
-                Log.i("DatabaseManager", "Reservación insertada con éxito")
+            val insertQuery = """
+            INSERT OR IGNORE INTO Reservacion (id_reservacion, id_usuario, hora_inicio, hora_cierre, cant_visit, servicios, fecha)
+            VALUES (?, ?, ?, ?, ?, ?,?)
+        """
+
+            database.beginTransaction() // Inicia la transacción para garantizar atomicidad
+            reservaciones.forEach { reservacion ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(
+                        reservacion.id_reservacion,
+                        reservacion.id_usuario,
+                        reservacion.hora_inicio,
+                        reservacion.hora_cierre,
+                        reservacion.cant_visit,
+                        reservacion.servicios,
+                        reservacion.fecha
+                    )
+                )
             }
-            db.setTransactionSuccessful()  // Confirmar la transacción
+            database.setTransactionSuccessful() // Marca la transacción como exitosa
+            Log.e("DatabaseManager", "Reservaciones insertadas con éxito")
         } catch (e: Exception) {
-            Log.e("DatabaseManager", "Error en la transacción de la reservación: ${e.message}")
+            Log.e("DatabaseManager", "Error al insertar reservaciones: ${e.message}")
         } finally {
-            db.endTransaction()  // Finalizar la transacción
-            closeDatabase()  // Cerrar la base de datos después de la operación
+            database.endTransaction() // Finaliza la transacción
+            closeDatabase() // Cierra la base de datos
         }
     }
 
