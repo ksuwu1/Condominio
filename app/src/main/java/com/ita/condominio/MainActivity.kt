@@ -3,21 +3,28 @@ package com.ita.condominio
 import AccountDetailsScreen
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ita.condominio.Models.AccountDetailsViewModel
+import com.ita.condominio.database.DatabaseHelper
+import com.ita.condominio.database.DatabaseManager
 import com.ita.condominio.screens.*
-
 import com.ita.condominio.ui.theme.CondominioTheme
 import com.paypal.android.sdk.payments.PayPalService
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var dbHelper: DatabaseHelper
+    private lateinit var databaseManager: DatabaseManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -26,9 +33,16 @@ class MainActivity : AppCompatActivity() {
         intent.putExtra(PayPalService.EXTRA_PAYPAL_CONFIGURATION, Config.PAYPAL_CONFIG)
         startService(intent)
 
+        // Instanciar DatabaseHelper y DatabaseManager
+        dbHelper = DatabaseHelper(this)
+        databaseManager = DatabaseManager(this)
+
+        // Asegúrate de abrir la base de datos en modo escritura si necesitas hacerlo aquí
+        dbHelper.writableDatabase
+
         setContent {
             CondominioTheme {
-                ComposeApp(this)
+                ComposeApp(activity = this, databaseManager = databaseManager)
             }
         }
     }
@@ -41,20 +55,28 @@ class MainActivity : AppCompatActivity() {
 }
 
 @Composable
-fun ComposeApp(activity: AppCompatActivity) {
+fun ComposeApp(activity: AppCompatActivity, databaseManager: DatabaseManager) {
     val navController = rememberNavController()
     Surface(color = Color.White) {
-        AppNavigation(navController = navController, activity = activity)
+        AppNavigation(navController = navController, activity = activity, databaseManager = databaseManager)
     }
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController, activity: AppCompatActivity) {
+fun AppNavigation(navController: NavHostController, activity: AppCompatActivity, databaseManager: DatabaseManager) {
     NavHost(navController = navController, startDestination = "login") {
         composable("MainMenu") { MainScreen(navController) }
         composable("notices") { NoticesScreen(navController) }
         composable("account") { AccountScreen(navController) }
-        composable("accountDetails") { AccountDetailsScreen(navController) }
+
+        /*
+        composable("accountDetails") {
+            val viewModel: AccountDetailsViewModel = viewModel()
+            AccountDetailsScreen(navController, viewModel)
+        }*/
+
+        composable("accountDetails") {  AccountDetailsScreen(navController) }
+
         composable("visitors") { VisitorsScreen(navController) }
         composable("reservation") { ReservationScreen(navController) }
         composable("payments") { PaymentsScreen(navController) }

@@ -76,15 +76,17 @@ fun AccountScreen(navController: NavHostController) {
             val accountOptions = listOf(
                 AccountOption("Cuenta", R.drawable.user, "accountDetails"),
                 AccountOption("Visitantes", R.drawable.visitors, "visitors"),
-                AccountOption("Reservación", R.drawable.reserv, "reservation"),
-
+                AccountOption("Reservación", R.drawable.reserv, "reservation")
             )
 
             items(accountOptions) { option ->
                 AccountOptionButton(
                     text = option.text,
                     iconRes = option.iconRes,
-                    onClick = { navController.navigate(option.route) }
+                    onClick = {
+                        // Navigate directly assuming that the routes are well-defined
+                        navController.navigate(option.route)
+                    }
                 )
             }
 
@@ -93,7 +95,10 @@ fun AccountScreen(navController: NavHostController) {
             // Botón Cerrar Sesión
             item {
                 Button(
-                    onClick = { navController.navigate("login") },
+                    onClick = {
+                        // Navigate to the login screen, ensure the route exists in your NavHost
+                        navController.navigate("login")
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(10.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)

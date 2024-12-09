@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.cronet.embedded)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -87,4 +89,20 @@ dependencies {
     implementation("androidx.asynclayoutinflater:asynclayoutinflater-appcompat:1.1.0-alpha01")
 
 
+
+    implementation ("androidx.appcompat:appcompat:1.6.1") // Para la compatibilidad con versiones anteriores
+    implementation ("androidx.core:core-ktx:1.10.1")
+
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    implementation(libs.androidx.room.common)
+    implementation(libs.androidx.room.ktx)
+    implementation ("androidx.room:room-runtime:2.5.0") // Usa la versión más reciente
+    val room_version= "2.6.1"
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:2.5.0")
+
+    implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
 }
