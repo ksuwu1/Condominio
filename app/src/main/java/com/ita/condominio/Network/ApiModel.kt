@@ -75,3 +75,20 @@ data class UserRequest(
     val tel_casa: String,
     val cel: String
 )
+
+data class Reservacion(
+    val id_reservacion: Int,
+    val id_usuario: Int,
+    val hora_inicio: String,
+    val hora_cierre: String,
+    val cant_visit: Int,
+    val servicios: String,
+    val fecha: String
+)
+
+data class ReservacionRespuesta(
+    val success: Boolean,
+    val message: String,
+    val reservacion: Reservacion? // Devuelve la reservación creada, si aplica
+)
+

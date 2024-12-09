@@ -14,6 +14,7 @@ foundationLayoutAndroidVersion = "1.6.6"
 uiTestAndroidVersion = "1.7.0"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
+cronetEmbedded = "119.6045.31"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ foundation-layout-android = { group = "androidx.compose.foundation", name = "fou
 ui-test-android = { group = "androidx.compose.ui", name = "ui-test-android", version.ref = "uiTestAndroidVersion" }
 androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "roomKtx" }
+cronet-embedded = { group = "org.chromium.net", name = "cronet-embedded", version.ref = "cronetEmbedded" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
