@@ -16,6 +16,7 @@ import com.ita.condominio.Network.ReservationIncome
 import com.ita.condominio.Network.UserResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import com.ita.condominio.Network.Reservacion
 
 class DatabaseManager(private val context: Context) {
 
@@ -141,6 +142,7 @@ class DatabaseManager(private val context: Context) {
             closeDatabase() // Cierra la base de datos solo una vez
         }
     }
+
 
     fun insertarMantenimientoIngresos(ingresos: List<MaintenanceIncome>) {
         openDatabase()
@@ -303,6 +305,38 @@ class DatabaseManager(private val context: Context) {
             closeDatabase()
         }
     }
+    
+    fun insertarReservaciones(reservaciones: List<Reservacion>) {
+        openDatabase() // Abre la base de datos una vez
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Reservacion (id_reservacion, id_usuario, hora_inicio, hora_cierre, cant_visit, servicios, fecha)
+            VALUES (?, ?, ?, ?, ?, ?,?)
+        """
 
+            database.beginTransaction() // Inicia la transacción para garantizar atomicidad
+            reservaciones.forEach { reservacion ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(
+                        reservacion.id_reservacion,
+                        reservacion.id_usuario,
+                        reservacion.hora_inicio,
+                        reservacion.hora_cierre,
+                        reservacion.cant_visit,
+                        reservacion.servicios,
+                        reservacion.fecha
+                    )
+                )
+            }
+            database.setTransactionSuccessful() // Marca la transacción como exitosa
+            Log.e("DatabaseManager", "Reservaciones insertadas con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar reservaciones: ${e.message}")
+        } finally {
+            database.endTransaction() // Finaliza la transacción
+            closeDatabase() // Cierra la base de datos
+        }
+    }
 
 }
