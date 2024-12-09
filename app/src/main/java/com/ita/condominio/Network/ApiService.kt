@@ -4,7 +4,10 @@ import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.PATCH
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("users/login")
@@ -18,9 +21,24 @@ interface ApiService {
 
     @GET("avisos") // El endpoint de la API
     suspend fun getAvisos(): Response<List<ModelAvisos>>
+        
+    @GET("users")
+    suspend fun getUserByEmail(@Query("correo") correo: String): Response<UserResponse>
 
-    @POST("reservaciones")
+    @GET("/egreso")
+    suspend fun getExpenses(): List<Expense>
+
+    @GET("/ingreso/mantenimiento")
+    suspend fun getMaintenanceIncomes(): List<MaintenanceIncome>
+
+    @GET("/ingreso/reserva")
+    suspend fun getReservationIncomes(): List<ReservationIncome>
+    @PATCH("users/{id}/password")
+    suspend fun changePassword(
+        @Path("id") userId: Int,
+        @Body passwordRequest: ChangePasswordRequest
+    ): Response<Void>
+        
+        @POST("reservaciones")
     suspend fun insertarReservaciones(@Body reservacion: Reservacion): ReservacionRespuesta
-
-
 }

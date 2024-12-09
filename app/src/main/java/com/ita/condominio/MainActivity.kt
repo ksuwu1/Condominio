@@ -9,10 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.ita.condominio.Models.AccountDetailsViewModel
 import com.ita.condominio.database.DatabaseHelper
 import com.ita.condominio.database.DatabaseManager
 import com.ita.condominio.screens.*
@@ -67,15 +69,13 @@ fun AppNavigation(navController: NavHostController, activity: AppCompatActivity,
         composable("notices") { NoticesScreen(navController) }
         composable("account") { AccountScreen(navController) }
 
-        composable("accountDetails/{userId}") { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")
-            if (userId != null) {
-                AccountDetailsScreen(navController, userId.toString())
-            } else {
-                Log.e("AppNavigation", "User ID is null")
-                // Opcional: navegar a una pantalla de error o mostrar un mensaje de error.
-            }
-        }
+        /*
+        composable("accountDetails") {
+            val viewModel: AccountDetailsViewModel = viewModel()
+            AccountDetailsScreen(navController, viewModel)
+        }*/
+
+        composable("accountDetails") {  AccountDetailsScreen(navController) }
 
         composable("visitors") { VisitorsScreen(navController) }
         composable("reservation") { ReservationScreen(navController) }

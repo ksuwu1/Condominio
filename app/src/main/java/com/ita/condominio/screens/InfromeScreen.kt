@@ -13,94 +13,40 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.ita.condominio.Models.MaintenanceIncome
-import com.ita.condominio.Models.ReservationIncome
-import com.ita.condominio.Models.Expense
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.*
+import com.ita.condominio.Network.Expense
+import com.ita.condominio.Network.InformeViewModel
+import com.ita.condominio.Network.MaintenanceIncome
+import com.ita.condominio.Network.ReservationIncome
 
 @Composable
-fun InformeScreen(navController: NavHostController) {
-    val month = "Marzo"
-    val totalIncome = 15750
-    val maintenanceIncomeData = listOf(
-        MaintenanceIncome("001", "1", "Juan Pérez", month, 5000, "Sí"),
-        MaintenanceIncome("002", "2", "María López", month, 6000, "No"),
-        MaintenanceIncome("003", "3", "Carlos García", month, 6750, "Sí")
-    )
-    val reservationIncomeData = listOf(
-        ReservationIncome("004", "4", "Sala de eventos", "01-10-2023", 2000, "Sí"),
-        ReservationIncome("005", "5", "Cancha de tenis", "05-10-2023", 1500, "No")
-    )
-    val expensesData = listOf(
-        Expense("006", "Mantenimiento", "01-10-2023", 2500),
-        Expense("007", "Reparaciones", "10-10-2023", 1000)
-    )
+fun InformeScreen(navController: NavHostController, viewModel: InformeViewModel = viewModel()) {
+    // Disparar la carga de datos al iniciar la pantalla
+    LaunchedEffect(Unit) {
+        viewModel.fetchData()
+    }
 
-    val maintenanceTotal = maintenanceIncomeData.sumOf { it.cantidad }
-    val reservationTotal = reservationIncomeData.sumOf { it.cantidad }
-    val expensesTotal = expensesData.sumOf { it.cantidad }
-    val finalTotal = totalIncome + maintenanceTotal + reservationTotal - expensesTotal
+    // Observamos los datos del ViewModel
+    val expenses by viewModel.expenses.collectAsState()
+    val maintenanceIncomes by viewModel.maintenanceIncomes.collectAsState()
+    val reservationIncomes by viewModel.reservationIncomes.collectAsState()
+
+    // Calcular totales dinámicamente
+    val maintenanceTotal = maintenanceIncomes.sumOf { it.cantidad }
+    val reservationTotal = reservationIncomes.sumOf { it.cantidad }
+    val expensesTotal = expenses.sumOf { it.cantidad }
+    val finalTotal = maintenanceTotal + reservationTotal - expensesTotal
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        // Banner con flecha de regreso
         item {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .background(Color(0xFF699C89)),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Regresar",
-                                tint = Color.White
-                            )
-                        }
-                        Text(
-                            text = "Condominio",
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(start = 8.dp),
-                            color = Color.White
-                        )
-                    }
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(30.dp)
-                        .background(Color(0xFFC4D9D2)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "Informe del mes: $month",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Gray
-                    )
-                }
-            }
+            // Encabezado (igual que antes)
+            Header(navController)
         }
 
-        // Saldo del mes anterior
-        item {
-            Text(
-                text = "Saldo del mes anterior: $$totalIncome",
-                fontSize = 18.sp,
-                modifier = Modifier.padding(16.dp)
-            )
-        }
-
-        // Secciones con tarjetas
         item {
             Text(
                 text = "Ingresos de mantenimiento",
@@ -109,7 +55,7 @@ fun InformeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(16.dp)
             )
         }
-        items(maintenanceIncomeData) { item ->
+        items(maintenanceIncomes) { item ->
             MaintenanceIncomeCard(item = item)
         }
 
@@ -121,7 +67,7 @@ fun InformeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(16.dp)
             )
         }
-        items(reservationIncomeData) { item ->
+        items(reservationIncomes) { item ->
             ReservationIncomeCard(item = item)
         }
 
@@ -133,11 +79,10 @@ fun InformeScreen(navController: NavHostController) {
                 modifier = Modifier.padding(16.dp)
             )
         }
-        items(expensesData) { item ->
+        items(expenses) { item ->
             ExpenseCard(item = item)
         }
 
-        // Total del mes
         item {
             Text(
                 text = "Total del mes: $$finalTotal",
@@ -151,6 +96,40 @@ fun InformeScreen(navController: NavHostController) {
 }
 
 @Composable
+fun Header(navController: NavHostController) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp)
+                .background(Color(0xFF699C89)),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Regresar",
+                        tint = Color.White
+                    )
+                }
+                Text(
+                    text = "Condominio",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp),
+                    color = Color.White
+                )
+            }
+        }
+    }
+}
+
+
+@Composable
 fun MaintenanceIncomeCard(item: MaintenanceIncome) {
     Card(
         modifier = Modifier
@@ -160,12 +139,16 @@ fun MaintenanceIncomeCard(item: MaintenanceIncome) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
-            Text(text = "Casa: ${item.noCasa}")
+            Text(text = "Folio: ${item.M_folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Casa: ${item.casa}")
             Text(text = "Nombre: ${item.nombre}")
             Text(text = "Mes: ${item.mes}")
             Text(text = "Cantidad: \$${item.cantidad}")
-            Text(text = "Transferencia: ${item.transferencia}")
+            if(item.transferencia){
+                Text(text = "Transferencia: SI")
+            }else{
+                Text(text = "Transferencia: NO")
+            }
         }
     }
 }
@@ -180,12 +163,16 @@ fun ReservationIncomeCard(item: ReservationIncome) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
-            Text(text = "Casa: ${item.noCasa}")
+            Text(text = "Folio: ${item.R_folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Casa: ${item.casa}")
             Text(text = "Descripción: ${item.descripcion}")
             Text(text = "Fecha: ${item.fecha}")
             Text(text = "Cantidad: \$${item.cantidad}")
-            Text(text = "Transferencia: ${item.transferencia}")
+            if(item.transferencia){
+                Text(text = "Transferencia: SI")
+            }else{
+                Text(text = "Transferencia: NO")
+            }
         }
     }
 }
@@ -200,7 +187,7 @@ fun ExpenseCard(item: Expense) {
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = "Folio: ${item.folio}", fontWeight = FontWeight.Bold)
+            Text(text = "Folio: ${item.E_folio}", fontWeight = FontWeight.Bold)
             Text(text = "Descripción: ${item.descripcion}")
             Text(text = "Fecha: ${item.fecha}")
             Text(text = "Cantidad: \$${item.cantidad}")

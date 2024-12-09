@@ -104,4 +104,5 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.5.0")
 
     implementation ("androidx.compose.runtime:runtime-livedata:1.5.0")
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.5.1")
 }

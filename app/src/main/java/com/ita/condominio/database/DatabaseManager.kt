@@ -1,18 +1,21 @@
 package com.ita.condominio.database
 
+import android.content.ContentValues
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
 import com.ita.condominio.Network.LoginRequest
 import com.ita.condominio.Network.RetrofitInstance
-import com.ita.condominio.Network.UserResponse
-import kotlinx.coroutines.launch
-import android.content.ContentValues
 import com.ita.condominio.Models.ModelMorosos
+import com.ita.condominio.Network.Expense
+import com.ita.condominio.Network.MaintenanceIncome
 import com.ita.condominio.Network.ModelAvisos
 import com.ita.condominio.Network.Moroso
+import com.ita.condominio.Network.ReservationIncome
+import com.ita.condominio.Network.UserResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import com.ita.condominio.Network.Reservacion
 
 class DatabaseManager(private val context: Context) {
@@ -140,6 +143,169 @@ class DatabaseManager(private val context: Context) {
         }
     }
 
+
+    fun insertarMantenimientoIngresos(ingresos: List<MaintenanceIncome>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Mantenimiento (M_folio, casa, nombre, mes, cantidad, transferencia)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            ingresos.forEach { ingreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(ingreso.M_folio, ingreso.casa, ingreso.nombre, ingreso.mes, ingreso.cantidad, if (ingreso.transferencia) 1 else 0)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Ingresos de mantenimiento insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar ingresos de mantenimiento: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
+
+    fun insertarReservaIngresos(ingresos: List<ReservationIncome>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Ingre_Reserva (R_folio, casa, descripcion, fecha, cantidad, transferencia)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            ingresos.forEach { ingreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(ingreso.R_folio, ingreso.casa, ingreso.descripcion, ingreso.fecha, ingreso.cantidad, if (ingreso.transferencia) 1 else 0)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Ingresos de reserva insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar ingresos de reserva: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
+
+    fun insertarEgresos(egresos: List<Expense>) {
+        openDatabase()
+        try {
+            val insertQuery = """
+            INSERT OR IGNORE INTO Egreso (E_folio, descripcion, fecha, cantidad)
+            VALUES (?, ?, ?, ?)
+        """
+            database.beginTransaction()
+            egresos.forEach { egreso ->
+                database.execSQL(
+                    insertQuery,
+                    arrayOf(egreso.E_folio, egreso.descripcion, egreso.fecha, egreso.cantidad)
+                )
+            }
+            database.setTransactionSuccessful()
+            Log.e("DatabaseManager", "Egresos insertados con éxito")
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al insertar egresos: ${e.message}")
+        } finally {
+            database.endTransaction()
+            closeDatabase()
+        }
+    }
+
+    suspend fun obtenerUsuario(): UserResponse? {
+        Log.e("DatabaseManager", "ENTRA A LA CONSULTA")
+        return withContext(Dispatchers.IO) {
+            var user: UserResponse? = null
+
+            try {
+                openDatabase() // Abre la base de datos
+
+                val cursor = database.rawQuery("SELECT * FROM Usuario", null)
+
+                if (cursor.moveToFirst()) {
+                    val id_usuario = cursor.getInt(cursor.getColumnIndexOrThrow("id_usuario"))
+                    val nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
+                    val apellidoPat = cursor.getString(cursor.getColumnIndexOrThrow("apellido_pat"))
+                    val apellidoMat = cursor.getString(cursor.getColumnIndexOrThrow("apellido_mat"))
+                    val numCasa = cursor.getInt(cursor.getColumnIndexOrThrow("num_casa"))
+                    val correo = cursor.getString(cursor.getColumnIndexOrThrow("correo"))
+                    val password = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+                    val telCasa = cursor.getString(cursor.getColumnIndexOrThrow("tel_casa"))
+                    val cel = cursor.getString(cursor.getColumnIndexOrThrow("cel"))
+
+                    user = UserResponse(id_usuario, nombre, apellidoPat, apellidoMat, numCasa, correo, password, telCasa, cel)
+                }
+                if (cursor.moveToFirst()) {
+                    Log.e("DatabaseManager", "Usuario encontrado")
+                } else {
+                    Log.e("DatabaseManager", "No se encontró ningún usuario en la tabla Usuario")
+                }
+
+                cursor.close() // Cierra el cursor
+            } catch (e: Exception) {
+                Log.e("DatabaseManager", "Error al obtener usuario: ${e.message}")
+            } finally {
+                closeDatabase() // Cierra la base de datos
+            }
+
+            return@withContext user
+        }
+    }
+
+    fun getColumnIndexSafe(cursor: Cursor, columnName: String): String? {
+        val index = cursor.getColumnIndex(columnName)
+        return if (index >= 0) cursor.getString(index) else null
+    }
+
+    fun actualizarUsuario(usuario: UserResponse): Boolean {
+        Log.e("AccountDetailsViewModel", "ENTRO A ACTUALIZAR" + usuario.cel)
+
+        val db = dbHelper.writableDatabase
+        val celular = usuario.cel
+
+        try {
+            // Inicia la transacción
+            db.beginTransaction()
+
+            val updateQuery = """
+            INSERT OR REPLACE INTO Usuario (id_usuario, nombre, apellido_pat, apellido_mat, num_casa, correo, password, tel_casa, cel)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """
+
+            // Ejecuta el update o insert
+            db.execSQL(
+                updateQuery,
+                arrayOf(usuario.id_usuario, usuario.nombre, usuario.apellido_pat, usuario.apellido_mat, usuario.num_casa, usuario.correo, usuario.password, usuario.tel_casa, usuario.cel)
+            )
+
+            // Marca la transacción como exitosa
+            db.setTransactionSuccessful()
+
+            val query = "SELECT * FROM Usuario WHERE id_usuario = ?"
+            val cursor = db.rawQuery(query, arrayOf(usuario.id_usuario.toString()))
+
+            if (cursor.moveToFirst()) {
+                val cel = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
+                Log.e("DatabaseManager", "Celular actualizado: $cel")
+            } else {
+                Log.e("DatabaseManager", "No se encontró el usuario con id_usuario: ${usuario.id_usuario}")
+            }
+
+            return true
+        } catch (e: Exception) {
+            Log.e("DatabaseManager", "Error al actualizar o insertar usuario: ${e.message} ${celular}" )
+            return false
+        } finally {
+            // Finaliza la transacción y cierra la base de datos
+            db.endTransaction()
+            closeDatabase()
+        }
+    }
+    
     fun insertarReservaciones(reservaciones: List<Reservacion>) {
         openDatabase() // Abre la base de datos una vez
         try {
