@@ -21,6 +21,7 @@ interface ApiService {
 
     @GET("users")
     suspend fun getUserByEmail(@Query("correo") correo: String): Response<UserResponse>
+
     @GET("/egreso")
     suspend fun getExpenses(): List<Expense>
 

@@ -1,6 +1,7 @@
 package com.ita.condominio.database
 
 import android.content.Context
+import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import com.ita.condominio.Network.LoginRequest
@@ -11,6 +12,9 @@ import com.ita.condominio.Network.MaintenanceIncome
 import com.ita.condominio.Network.ModelAvisos
 import com.ita.condominio.Network.Moroso
 import com.ita.condominio.Network.ReservationIncome
+import com.ita.condominio.Network.UserResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class DatabaseManager(private val context: Context) {
 
@@ -208,5 +212,53 @@ class DatabaseManager(private val context: Context) {
             closeDatabase()
         }
     }
+
+    suspend fun obtenerUsuario(): UserResponse? {
+        Log.e("DatabaseManager", "ENTRA A LA CONSULTA")
+        return withContext(Dispatchers.IO) {
+            var user: UserResponse? = null
+
+            try {
+                openDatabase() // Abre la base de datos
+
+                val cursor = database.rawQuery("SELECT * FROM Usuario", null)
+
+                if (cursor.moveToFirst()) {
+                    val id_usuario = cursor.getInt(cursor.getColumnIndexOrThrow("id_usuario"))
+                    val nombre = cursor.getString(cursor.getColumnIndexOrThrow("nombre"))
+                    val apellidoPat = cursor.getString(cursor.getColumnIndexOrThrow("apellido_pat"))
+                    val apellidoMat = cursor.getString(cursor.getColumnIndexOrThrow("apellido_mat"))
+                    val numCasa = cursor.getInt(cursor.getColumnIndexOrThrow("num_casa"))
+                    val correo = cursor.getString(cursor.getColumnIndexOrThrow("correo"))
+                    val password = cursor.getString(cursor.getColumnIndexOrThrow("password"))
+                    val telCasa = cursor.getString(cursor.getColumnIndexOrThrow("tel_casa"))
+                    val cel = cursor.getString(cursor.getColumnIndexOrThrow("cel"))
+
+                    user = UserResponse(id_usuario, nombre, apellidoPat, apellidoMat, numCasa, correo, password, telCasa, cel)
+                }
+                if (cursor.moveToFirst()) {
+                    Log.e("DatabaseManager", "Usuario encontrado")
+                } else {
+                    Log.e("DatabaseManager", "No se encontró ningún usuario en la tabla Usuario")
+                }
+
+                cursor.close() // Cierra el cursor
+            } catch (e: Exception) {
+                Log.e("DatabaseManager", "Error al obtener usuario: ${e.message}")
+            } finally {
+                closeDatabase() // Cierra la base de datos
+            }
+
+            return@withContext user
+        }
+    }
+
+
+    fun getColumnIndexSafe(cursor: Cursor, columnName: String): String? {
+        val index = cursor.getColumnIndex(columnName)
+        return if (index >= 0) cursor.getString(index) else null
+    }
+
+
 
 }

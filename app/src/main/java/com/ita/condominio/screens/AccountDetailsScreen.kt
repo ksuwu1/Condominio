@@ -1,3 +1,7 @@
+import android.app.Application
+import android.content.Context
+import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,49 +16,40 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.ita.condominio.BottomNavigationBar
 import com.ita.condominio.CustomHeader2
-import com.ita.condominio.Models.AccountDetailsViewModel
+
 import com.ita.condominio.R
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.material.Snackbar
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ita.condominio.Network.AccountDetailsViewModel
 
 @Composable
 fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDetailsViewModel = viewModel()) {
-    // Observa los detalles de usuario y los errores desde el ViewModel
-    val userDetails by viewModel.userDetails.observeAsState()
-    val error by viewModel.error.observeAsState()
+        val usuario by viewModel.usuario.observeAsState()
 
-    // Estado para indicar si los campos son editables o solo de lectura
-    var isEditing by remember { mutableStateOf(false) }
+        // Usar valores directamente desde el usuario
+        val vnombre = usuario?.nombre ?: "Cargando..."
+        val vapellidoPat = usuario?.apellido_pat ?: "Cargando..."
+        val vapellidoMat = usuario?.apellido_mat ?: "Cargando..."
+        val vtelCasa = usuario?.tel_casa ?: "Cargando..."
+        val vcel = usuario?.cel ?: "Cargando..."
+        val vcorreo = usuario?.correo ?: "Cargando..."
 
-    // Estados iniciales para los campos
-    var nombre by remember { mutableStateOf("") }
-    var apellido_pat by remember { mutableStateOf("") }
-    var apellido_mat by remember { mutableStateOf("") }
-    var tel_casa by remember { mutableStateOf("") }
-    var cel by remember { mutableStateOf("") }
-    var correo by remember { mutableStateOf("") }
+        // Estado para indicar si los campos son editables o solo de lectura
+        var isEditing by remember { mutableStateOf(false) }
 
-    // Llamada para cargar los detalles del usuario al iniciar la pantalla
-    LaunchedEffect(Unit) {
-        viewModel.fetchUserDetails(correo)
-    }
-
-    // Mostrar una Snackbar si hay un error
-    error?.let {
+        // Mostrar una Snackbar si hay un error
+    /*error?.let {
         Snackbar(
             modifier = Modifier.padding(8.dp),
             content = {
                 Text(text = it, color = Color.White)
             }
         )
-    }
+    }*/
 
     Column(modifier = Modifier.fillMaxSize()) {
         // Encabezado de la pantalla
@@ -96,12 +91,12 @@ fun AccountDetailsScreen(navController: NavHostController, viewModel: AccountDet
                 )
             }
 
-            item { EditableField("Nombre", nombre, isEditing) { nombre = it } }
-            item { EditableField("Apellido paterno", apellido_pat, isEditing) { apellido_pat = it } }
-            item { EditableField("Apellido materno", apellido_mat, isEditing) { apellido_mat = it } }
-            item { EditableField("Teléfono casa", tel_casa, isEditing) { tel_casa = it } }
-            item { EditableField("Celular", cel, isEditing) { cel = it } }
-            item { EditableField("Correo", correo, isEditing) { correo = it } }
+            item { EditableField("Nombre", vnombre, isEditing) { /* acción al editar */ } }
+            item { EditableField("Apellido paterno", vapellidoPat, isEditing) { /* acción al editar */ } }
+            item { EditableField("Apellido materno", vapellidoMat, isEditing) { /* acción al editar */ } }
+            item { EditableField("Teléfono casa", vtelCasa, isEditing) { /* acción al editar */ } }
+            item { EditableField("Celular", vcel, isEditing) { /* acción al editar */ } }
+            item { EditableField("Correo", vcorreo, isEditing) { /* acción al editar */ } }
 
             // Botones para modificar datos y cambiar contraseña
             item {
