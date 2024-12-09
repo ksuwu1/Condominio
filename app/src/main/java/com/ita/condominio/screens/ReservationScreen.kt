@@ -29,15 +29,6 @@ import android.content.Intent
 import android.provider.CalendarContract
 import android.app.AlertDialog
 import com.ita.condominio.CustomHeader2
-import com.ita.condominio.Network.Reservacion
-import com.ita.condominio.Network.ReservacionRespuesta
-import com.ita.condominio.Network.RetrofitInstance
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import okhttp3.Response
-import org.chromium.base.Callback
-import retrofit2.Call
 
 @Composable
 fun ReservationScreen(navController: NavHostController) {
@@ -97,6 +88,7 @@ fun ReservationScreen(navController: NavHostController) {
             putExtra(CalendarContract.Events.TITLE, "Reserva de Espacio")
             putExtra(CalendarContract.Events.DESCRIPTION, "Visitantes: $visitantes")
 
+
             // Parsear fecha y hora
             val parts = fecha.split("/")
             val dateCalendar = Calendar.getInstance().apply {
@@ -121,50 +113,6 @@ fun ReservationScreen(navController: NavHostController) {
 
         context.startActivity(intent)
     }
-
-    // Función para obtener los servicios seleccionados
-    fun getServiciosSeleccionados(): String {
-        val serviciosSeleccionados = mutableListOf<String>()
-
-        if (bañosChecked) serviciosSeleccionados.add("Baños")
-        if (palapaChecked) serviciosSeleccionados.add("Palapa")
-        if (salonChecked) serviciosSeleccionados.add("Salón")
-        if (albercaChecked) serviciosSeleccionados.add("Alberca")
-
-        return serviciosSeleccionados.joinToString(", ")
-    }
-
-    // Función para realizar la reservación
-    suspend fun insertarReservaciones() {
-        // Crear la reservación con los datos actuales
-        val reservacion = Reservacion(
-            id_reservacion = 0, // El id puede ser autogenerado por la base de datos
-            id_usuario = 1, // Aquí debes obtener el ID del usuario que está haciendo la reserva
-            hora_inicio = horaInicio,
-            hora_cierre = horaCierre,
-            cant_visit = visitantes.toInt(),
-            servicios = getServiciosSeleccionados(),
-            fecha = fecha
-        )
-
-        try {
-            // Llamar a la API usando Retrofit
-            val respuesta = RetrofitInstance.api.insertarReservaciones(reservacion)
-
-            // Verifica si la respuesta es exitosa
-            if (respuesta.success) {
-                // Si la respuesta es exitosa, mostrar un mensaje
-                showDialog = true
-            } else {
-                // Si no es exitosa, manejar el error
-                showDialog = false
-            }
-        } catch (e: Exception) {
-            // En caso de error en la conexión o cualquier otro tipo de fallo
-            showDialog = false
-        }
-    }
-
 
     Column(
         modifier = Modifier.fillMaxSize()
@@ -241,69 +189,115 @@ fun ReservationScreen(navController: NavHostController) {
                 // Checkboxes para los espacios
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = bañosChecked, onCheckedChange = { bañosChecked = it })
-                    Text(text = "Baños ($precioBaños)", fontSize = 16.sp)
+                    Text(text = "Baños (\$$precioBaños)")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = palapaChecked, onCheckedChange = { palapaChecked = it })
-                    Text(text = "Palapa ($precioPalapa)", fontSize = 16.sp)
+                    Text(text = "Palapa (\$$precioPalapa)")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = salonChecked, onCheckedChange = { salonChecked = it })
-                    Text(text = "Salón ($precioSalon)", fontSize = 16.sp)
+                    Text(text = "Salón (\$$precioSalon)")
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Checkbox(checked = albercaChecked, onCheckedChange = { albercaChecked = it })
-                    Text(text = "Alberca ($precioAlberca)", fontSize = 16.sp)
+                    Text(text = "Alberca (\$$precioAlberca)")
                 }
 
-                // Espacio entre los checkboxes y el total
+                // Espacio entre espacios a reservar y cantidad de visitantes
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Mostrar el total
-                Text(text = "Total a pagar: $total", fontSize = 20.sp, fontWeight = FontWeight.Bold)
-            }
+                // Cantidad de visitantes
+                OutlinedTextField(
+                    value = visitantes,
+                    onValueChange = { visitantes = it },
+                    label = { Text("Visitantes") },
+                    modifier = Modifier.fillMaxWidth(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                )
 
-            item {
-                // Botón para realizar la reservación
+
+
+                // Botón para agregar evento al calendario
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(
-                    onClick = {
-                        // Llamada dentro de una corrutina para ejecutar la función suspensiva
-                        CoroutineScope(Dispatchers.Main).launch {
-                            insertarReservaciones()
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1C76FF))
+                    onClick = { showDialog = true },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                        contentColor = Color.Black // Color del texto
+                    )
                 ) {
-                    Text(text = "Realizar Reservación")
+                    Text("Agregar evento a calendario")
                 }
 
+                // Confirmar si agregar al calendario
+                if (showDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showDialog = false },
+                        title = { Text("Agregar evento al calendario") },
+                        text = { Text("¿Desea agregar este evento a su calendario?") },
+                        confirmButton = {
+                            Button(
+                                onClick = {
+                                    addEventToCalendar(navController.context)
+                                    showDialog = false
+                                },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                                    contentColor = Color.Black // Color del texto
+                                )
+                            ) {
+                                Text("Sí")
+                            }
+                        },
+                        dismissButton = {
+                            Button(
+                                onClick = { showDialog = false },
+                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                                    containerColor = Color(0xFFC4D9D2), // Color de fondo del botón
+                                    contentColor = Color.Black // Color del texto
+                                )
+                            ) {
+                                Text("No")
+                            }
+                        }
+                    )
+                }
+
+                // Espacio entre el botón y el total a pagar
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Total a pagar
+                Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    Text(text = "Método de pago", fontSize = 20.sp, fontWeight = FontWeight.Bold)
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    PaymentMethodButton(
+                        iconRes = R.drawable.paypal,
+                        text = "Pago en línea",
+                        onClick = { navController.navigate("paypal/${total}") }
+                    )
+
+                    PaymentMethodButton(
+                        iconRes = R.drawable.bank,
+                        text = "Referencia bancaria",
+                        onClick = { navController.navigate("banco/${total}") }
+                    )
+                }
             }
         }
 
         // Barra de navegación inferior
         BottomNavigationBar(navController = navController)
     }
-
-    // Mostrar diálogo de confirmación o error
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Reservación exitosa") },
-            text = { Text("Tu reservación se ha realizado correctamente.") },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Aceptar")
-                }
-            }
-        )
-    }
 }
-
-fun insertarReservaciones() {
-    TODO("Not yet implemented")
-}
-
 @Composable
 fun PaymentMethodButton(iconRes: Int, text: String, onClick: () -> Unit) {
     Column(
